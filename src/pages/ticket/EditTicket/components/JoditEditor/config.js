@@ -1,0 +1,43 @@
+const config = {
+    hidePoweredByJodit: true,
+    useSearch: false,
+    language: 'en',
+    enter: 'BR',
+    toolbarSticky: false,
+    showXPathInStatusbar: false,
+    // enableDragAndDropFileToEditor: true,
+    placeholder: 'Type here...',
+    buttons: [
+        'bold',
+        'underline',
+        'italic',
+        'strikethrough',
+        'align',
+        'ul',
+        'ol',
+        'fontsize',
+        {
+            name: 'paragraph',
+            list: {
+                p: 'Paragraph',
+                h1: 'Heading 1',
+                h2: 'Heading 2',
+                h3: 'Heading 3',
+                h4: 'Heading 4',
+                h5: 'Heading 5',
+                h6: 'Heading 6',
+            },
+        },
+        // 'image',
+        'hr',
+        'table',
+        'link',
+        'indent',
+        'outdent',
+        'symbols',
+        'undo',
+        'redo',
+    ],
+};
+
+export { config };

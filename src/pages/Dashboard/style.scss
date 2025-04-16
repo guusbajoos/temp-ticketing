@@ -1,0 +1,56 @@
+.dashboard {
+  .panel {
+    border-radius: 7px;
+  }
+}
+.dashboard__title {
+  padding: 18px;
+}
+
+.dashboard__ticket {
+  .panel {
+    margin-bottom: 0;
+    padding: 24px 30px;
+  }
+  .dashboard__ticket-btn-reload {
+    right: -16px;
+    top: -16px;
+  }
+}
+
+.dashboard__sub-category {
+  .panel {
+    padding: 0;
+  }
+}
+
+.page-spinner--dashboard-tickets {
+  min-height: 70px;
+}
+
+.page-spinner--dashboard-ticket-backlog,
+.page-spinner--dashboard-subcategory {
+  min-height: 400px;
+}
+
+.page-spinner--dashboard-complaint-rate {
+  min-height: 750px;
+}
+
+.wrapper__notification {
+  //   position: relative;
+
+  .notification {
+    top: 0;
+    left: 0;
+    background-color: rgba(226, 226, 226, 0.3);
+    z-index: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: absolute;
+  }
+}

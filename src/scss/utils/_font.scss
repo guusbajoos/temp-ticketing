@@ -1,0 +1,86 @@
+// @font-face {
+//   font-family: 'Brandon';
+//   src: url('../../fonts/Brandon_thin.otf');
+//   font-weight: 100;
+//   font-style: normal;
+// }
+
+// @font-face {
+//   font-family: 'Brandon';
+//   src: url('../../fonts/Brandon_light.otf');
+//   font-weight: 200;
+//   font-style: normal;
+// }
+
+// @font-face {
+//   font-family: 'Brandon';
+//   src: url('../../fonts/Brandon_reg.otf');
+//   font-weight: 300;
+//   font-style: normal;
+// }
+
+// @font-face {
+//   font-family: 'Brandon';
+//   src: url('../../fonts/Brandon_med.otf');
+//   font-weight: normal;
+//   font-style: normal;
+// }
+
+// @font-face {
+//   font-family: 'Brandon';
+//   src: url('../../fonts/Brandon_blk.otf');
+//   font-weight: bold;
+//   font-style: normal;
+// }
+
+.text-caption {
+    font-size: 10px;
+    line-height: 24px;
+}
+
+.text-xs {
+    font-size: $font-size-xs;
+    line-height: 20px;
+}
+
+.text-sm {
+    font-size: $font-size-sm;
+    line-height: 22px;
+}
+
+.text-base {
+    font-size: $font-size-base;
+    line-height: 24px;
+}
+
+.text-md {
+    font-size: $font-size-md;
+    line-height: 28px;
+}
+
+.text-lg {
+    font-size: $font-size-lg;
+    line-height: 32px;
+}
+
+.text-xl {
+    font-size: $font-size-lg;
+    line-height: 38px;
+}
+
+.text-2xl {
+    font-size: $font-size-lg;
+    line-height: 46px;
+}
+
+.fw-bold {
+    font-weight: 600;
+}
+
+.fw-medium {
+    font-weight: 500;
+}
+
+.fw-normal {
+    font-weight: 400;
+}

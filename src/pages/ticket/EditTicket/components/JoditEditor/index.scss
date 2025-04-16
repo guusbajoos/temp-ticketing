@@ -1,0 +1,15 @@
+// .jodit-react-container {
+//     width: 100% !important;
+//     .jodit-container jodit jodit_theme_default jodit-wysiwyg_mode {
+//         height: 1000px !important;
+//     }
+// }
+
+.jodit_sticky > .jodit-toolbar__box {
+    position: relative !important;
+    top: 0px !important;
+}
+
+.jodit-status-bar {
+    display: none !important;
+}

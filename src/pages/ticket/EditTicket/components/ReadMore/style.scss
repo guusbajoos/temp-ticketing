@@ -1,0 +1,21 @@
+.note {
+  word-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: unset;
+  -webkit-box-orient: vertical;
+  margin-bottom: 0 !important;
+
+  &--hide {
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+}
+
+.read-or-hide {
+  color: #1890ff;
+  margin-top: 10px;
+
+  &:hover {
+    cursor: pointer;
+  }
+}

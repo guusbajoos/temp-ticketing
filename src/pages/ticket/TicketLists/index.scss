@@ -1,0 +1,90 @@
+.ticket-skeleton {
+  animation: ticket-skeleton-animate 1s linear infinite alternate;
+}
+
+@keyframes ticket-skeleton-animate {
+  0% {
+    background-color: hsl(200, 20%, 80%);
+  }
+  100% {
+    background-color: hsl(200, 20%, 95%);
+  }
+}
+.ticket-skeleton-numbers {
+  border-radius: 4px;
+  width: 50%;
+  height: 20px;
+}
+.ticket-skeleton-badge {
+  border-radius: 4px;
+  width: 40px;
+  height: 13px;
+}
+.ticket-skeleton-title {
+  border-radius: 4px;
+  width: 50%;
+  height: 10px;
+}
+.ticket-skeleton-patient {
+  border-radius: 4px;
+  width: 50%;
+  height: 15px;
+}
+.ticket-skeleton-assignedTo {
+  margin-top: 4px;
+  border-radius: 4px;
+  width: 50%;
+  height: 15px;
+}
+.ticket-skeleton-date {
+  border-radius: 4px;
+  width: 20%;
+  height: 10px;
+}
+.ticket-skeleton-duration {
+  border-radius: 4px;
+  width: 60%;
+  height: 10px;
+  margin-left: 40px;
+}
+.ticket-skeleton-bucket-name {
+  border-radius: 4px;
+  height: 15px;
+  width: 100%;
+  display: block;
+}
+
+.ant-checkbox-wrapper {
+  position: absolute !important;
+}
+
+.card-container_scroll {
+  overflow-x: auto !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  .card-list {
+    position: relative;
+    margin: 0px 15px;
+    border-radius: 12px;
+    overflow-y: auto;
+    .card-list-items {
+      margin: 20px 10px;
+      cursor: pointer;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px 0px;
+      .ant-card-body {
+        padding: 0px 0px 24px 24px !important;
+      }
+    }
+  }
+}
+
+.ant-card-head {
+  font-weight: normal !important;
+  .ant-card-head-title {
+    color: #5b5c5d !important;
+    font-size: 14px !important;
+  }
+}

@@ -1,0 +1,62 @@
+.detail-read-only {
+  .ant-input-disabled {
+    border-color: white !important;
+    background: white !important;
+    color: #5b5c5d !important;
+  }
+
+  .detail-read-only__title {
+    // white-space: nowrap;
+    width: 1000px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .detail-read-only__submit {
+    position: absolute;
+    right: 52px;
+    top: 106px;
+    z-index: 11;
+
+    .ant-btn-circle {
+      &:hover,
+      &:focus {
+        background: #2b95fe;
+        border: #2b95fe;
+      }
+    }
+
+    .more {
+      background-color: transparent;
+      border: 1px solid #5b5c5d;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 35px;
+      width: 35px;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .ant-form-item {
+    label {
+      color: #5b5c5d;
+    }
+  }
+
+  .ant-layout-content {
+    overflow: visible !important;
+    padding: 0 50px 0 50px;
+  }
+
+  .panel--table-detail-read-only {
+    height: calc(100vh - 200px);
+    border-radius: 16px;
+    overflow: auto;
+    padding: 41px 24px;
+  }
+}

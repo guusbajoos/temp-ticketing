@@ -1,0 +1,18 @@
+.pd-align {
+  &-center {
+    text-align: center;
+  }
+  &-left {
+    text-align: left;
+  }
+  &-right {
+    text-align: right;
+  }
+  &-justify {
+    text-align: justify;
+  }
+}
+
+.text-center {
+  text-align: center;
+}

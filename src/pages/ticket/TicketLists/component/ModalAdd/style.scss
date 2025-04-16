@@ -1,0 +1,111 @@
+.modal-add {
+    width: 900px !important;
+    margin: 10px 0px;
+
+    .ant-modal-close {
+        margin: 30px 20px !important;
+    }
+
+    .rahang-set {
+        margin-bottom: 25px;
+
+        .red {
+            color: #ff4d4f;
+            display: inline-block;
+            margin-left: 4px;
+        }
+
+        .mt-4 {
+            margin-top: 16px;
+        }
+
+        &-value {
+            padding: 0 25px;
+            position: relative;
+
+            .icon-container {
+                align-items: center;
+                border-radius: 50%;
+                display: flex;
+                height: 15px;
+                justify-content: center;
+                position: absolute;
+                top: 36px;
+                width: 15px;
+
+                &:hover {
+                    cursor: pointer;
+                }
+
+                &--left {
+                    left: -5px;
+                    transform: rotate(180deg);
+                }
+
+                &--right {
+                    right: -5px;
+                }
+
+                img {
+                    height: 15px;
+                    width: 15px;
+                }
+            }
+        }
+    }
+    .btn__custom-search-patient {
+        border-radius: 6px !important;
+        position: absolute;
+        height: 33px;
+        margin: 4px 10px;
+        right: 0px;
+        width: auto;
+        z-index: 999;
+    }
+}
+.ant-carousel .slick-track {
+    display: inline-block !important;
+    padding: 12px 0px !important;
+}
+
+.rahang-set-value {
+    position: relative;
+    padding: 0px 0px !important;
+}
+
+.modal-add .rahang-set-value .icon-container {
+    margin: 31px -10px !important;
+}
+
+.ant-form-item-explain-error {
+    color: #ff4d4f;
+    font-weight: 400;
+}
+
+.badge-class-urgency-normal {
+    padding: 8px;
+    border-radius: 5%;
+    background-color: rgb(111, 207, 151) !important;
+    color: #fff;
+}
+.badge-class-urgency-high {
+    padding: 8px;
+    border-radius: 5%;
+    background-color: rgb(242, 201, 76) !important;
+    color: #fff;
+}
+.badge-class-urgency-priority {
+    padding: 8px;
+    border-radius: 5%;
+    background-color: rgb(155, 81, 224) !important;
+    color: #fff;
+}
+
+.jodit_sticky > .jodit-toolbar__box {
+    position: relative !important;
+    top: 0px !important;
+}
+
+.jodit-status-bar {
+    display: none !important;
+}

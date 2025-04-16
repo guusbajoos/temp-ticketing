@@ -1,0 +1,8 @@
+.panel-search-inactive-tickets {
+  .panel {
+    padding: 20px 0px 0px 0px !important;
+  }
+}
+.ant-input-search > .ant-input-group > .ant-input-group-addon:last-child {
+  display: none !important;
+}

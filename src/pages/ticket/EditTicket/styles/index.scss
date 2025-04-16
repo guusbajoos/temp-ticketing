@@ -1,0 +1,153 @@
+.edit-ticket {
+  .description__text-area {
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap; /* Firefox */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* IE */
+
+    .rahang {
+      gap: 20px 0px;
+      display: flex;
+      flex-direction: column;
+
+      b {
+        display: inline-block;
+        margin-right: 10px;
+      }
+    }
+  }
+  .badge-label {
+    font-size: 14px;
+    line-height: 21px;
+    font-weight: 400;
+  }
+
+  .ant-divider {
+    border-top: 0.5px solid #b1b4b5;
+  }
+
+  .ant-layout-content {
+    overflow: auto !important;
+
+    .detail-read-only__title {
+      background: white;
+      width: 100%;
+    }
+  }
+
+  .ant-radio-button-wrapper:first-child:last-child {
+    border-radius: 15px;
+  }
+  // .panel--table-detail-read-only {
+  //   // height: auto;
+  // }
+
+  .comment-lists {
+    .ant-comment {
+      border-radius: 16px;
+    }
+    .ant-comment-actions {
+      margin: 8px 10px;
+    }
+    .ant-comment-inner {
+      display: flex;
+      gap: 0px 10px;
+      // padding-bottom: 0;
+      padding: 16px;
+      .ant-comment-avatar {
+        margin: 18px 0px;
+      }
+    }
+    .ant-comment-content-author {
+      display: flex;
+      align-items: center;
+      gap: 0px 10px;
+      margin: 20px 10px;
+    }
+    .ant-comment-content-detail {
+      margin: 0px 10px;
+      p {
+        font-size: 14px;
+        line-height: 21px;
+        color: #252525;
+      }
+    }
+    .ant-comment-content-author-name {
+      color: #252525;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 21px;
+    }
+    .ant-comment-content-author-time {
+      font-size: 14px;
+      line-height: 21px;
+      // font-weight: 500;
+      color: #b1b4b5;
+    }
+  }
+}
+
+.edit-detail {
+  .ant-form-item {
+    margin-bottom: 35px;
+  }
+  .edit-detail__submit {
+    position: absolute;
+    top: 89px;
+    right: 43px;
+
+    .anticon {
+      svg {
+        font-size: 25px;
+      }
+    }
+  }
+}
+
+.letter-avatar {
+  border-radius: 50%;
+  width: 30px;
+  line-height: 2.2;
+  justify-content: center;
+  display: flex;
+  height: 30px;
+  font-weight: 500;
+  color: white;
+}
+
+.history-list {
+  padding-left: 0;
+
+  .history-list__status-title {
+    color: #868686;
+  }
+
+  .history-list__status-desc {
+    color: #5b5c5d;
+
+    .history-list__status-desc-item {
+      // max-width: 300px;
+    }
+
+    .anticon {
+      margin: 0 8px;
+      svg {
+        font-size: 10px;
+      }
+    }
+  }
+}
+
+.ant-select {
+  &-selector {
+    align-items: center !important;
+    height: 40px !important;
+  }
+}
+
+.ant-select-show-search.ant-select:not(.ant-select-customize-input)
+  .ant-select-selector
+  input {
+  height: 100%;
+  font-size: 16px;
+}

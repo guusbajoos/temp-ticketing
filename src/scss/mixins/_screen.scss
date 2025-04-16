@@ -1,0 +1,23 @@
+@mixin screen-equal-above($screen) {
+  @if map-has-key($screens, $screen) {
+    $screen-value: map-get($screens, $screen);
+
+    @media (min-width: ($screen-value)) {
+      @content;
+    }
+  } @else {
+    @warn 'Invalid screen: #{$screen}.';
+  }
+}
+
+@mixin screen-below($screen) {
+  @if map-has-key($screens, $screen) {
+    $screen-value: map-get($screens, $screen);
+
+    @media (max-width: ($screen-value - 1)) {
+      @content;
+    }
+  } @else {
+    @warn 'Invalid screen: #{$screen}.';
+  }
+}

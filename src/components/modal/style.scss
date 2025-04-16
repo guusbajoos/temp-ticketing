@@ -1,0 +1,37 @@
+.order-tracking-btn {
+  cursor: pointer;
+}
+
+.customer-satifaction {
+  .rotate {
+    transform: rotate(3.142rad) scaleX(-1);
+    -webkit-transform: rotate(3.142rad) scaleX(-1);
+  }
+
+  .content {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+
+    .good {
+      margin-right: 100px;
+    }
+
+    .good,
+    .bad {
+      cursor: pointer;
+    }
+
+    .text {
+      margin-top: 8px;
+
+      &--good {
+        color: #27ae60;
+      }
+
+      &--bad {
+        color: #f2994a;
+      }
+    }
+  }
+}

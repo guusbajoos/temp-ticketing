@@ -1,0 +1,15 @@
+.complaint-rate {
+  .panel {
+    position: relative;
+
+    .complaint-rate {
+      top: 210px;
+      position: absolute;
+      right: 100px;
+
+      p {
+        font-weight: bold;
+      }
+    }
+  }
+}

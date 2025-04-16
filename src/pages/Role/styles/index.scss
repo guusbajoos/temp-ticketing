@@ -1,0 +1,17 @@
+.role-form {
+  .ant-checkbox-wrapper {
+    margin-bottom: 10px;
+  }
+
+  .ant-checkbox-wrapper + .ant-checkbox-wrapper {
+    margin-left: 0;
+  }
+
+  .ant-divider {
+    color: #B1B4B5;
+    border-style: solid;
+    border-width: 0.5px;
+  }
+}
+
+

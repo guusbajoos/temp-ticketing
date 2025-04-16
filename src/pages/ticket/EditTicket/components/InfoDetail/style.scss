@@ -1,0 +1,40 @@
+.pl-5 {
+  padding-left: 5px;
+}
+
+.satisfaction-container {
+  .thumb-container {
+    align-items: center;
+    display: flex;
+
+    .thumb {
+      width: 20px;
+    }
+
+    .text {
+      margin-left: 10px;
+
+      &--good {
+        color: #27ae60;
+      }
+
+      &--bad {
+        color: #f2994a;
+      }
+    }
+  }
+}
+
+.related-transaction {
+  align-items: center;
+  display: flex;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &__so-number {
+    color: #2b95fe;
+    margin-left: 5px;
+  }
+}

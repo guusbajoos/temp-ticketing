@@ -1,0 +1,76 @@
+@import 'src/scss/variables/index.scss';
+
+aside.pd-cms-sidebar {
+  background: $card-primary;
+  overflow: hidden;
+
+  .ant-typography {
+    padding: 24px;
+  }
+
+  .menu__icon-custom {
+    height: 20px;
+    width: 20px;
+    filter: invert(36%) sepia(20%) saturate(21%) hue-rotate(169deg)
+      brightness(93%) contrast(91%);
+  }
+
+  .ant-menu {
+    background: inherit;
+    border-right: none;
+  }
+
+  .ant-menu-title-content {
+    color: #5b5c5d;
+    a {
+      color: #5b5c5d;
+    }
+  }
+
+  .ant-menu-submenu-arrow {
+    color: #5b5c5d;
+  }
+
+  .ant-menu-root {
+    height: calc(100vh - 150px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+
+    .user-badge {
+      cursor: pointer;
+    }
+
+    i {
+      font-size: 20px !important;
+    }
+  }
+
+  .logo-container {
+    width: 5rem;
+
+    img {
+      width: 100%;
+    }
+  }
+}
+
+:where(.css-dev-only-do-not-override-1adbn6x).ant-menu-light.ant-menu-inline
+  .ant-menu-sub.ant-menu-inline,
+:where(.css-dev-only-do-not-override-1adbn6x).ant-menu-light
+  > .ant-menu.ant-menu-inline
+  .ant-menu-sub.ant-menu-inline {
+  background-color: transparent !important;
+}
+
+.ant-menu-sub {
+  .ant-menu-item {
+    display: flex !important;
+  }
+}

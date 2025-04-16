@@ -1,0 +1,14 @@
+@import 'src/scss/variables/index.scss';
+
+.page-spinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  min-height: calc(100vh - 90px);
+  width: 100%;
+
+  .ant-spin {
+    color: $primary-color;
+  }
+}

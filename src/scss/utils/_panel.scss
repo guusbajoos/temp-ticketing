@@ -1,0 +1,14 @@
+.panel {
+  padding: 20px;
+  background-color: #f2f5f7;
+  border-radius: 7px;
+  margin-bottom: 20px;
+
+  &--secondary {
+    background-color: #fafafa;
+  }
+
+  &--tickets {
+    background-color: #eaedef;
+  }
+}

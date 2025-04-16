@@ -1,0 +1,44 @@
+.csat {
+  &-status {
+    align-items: center;
+    display: flex;
+
+    img {
+      margin-right: 15px;
+      width: 20px;
+    }
+
+    .text {
+      max-width: 262px;
+    }
+  }
+
+  &-text {
+    max-width: calc(793.33px / 2);
+
+    &--old {
+      color: #bdbdbd !important;
+    }
+  }
+}
+
+.text--upercase {
+  text-transform: uppercase;
+}
+
+.text {
+  &--good {
+    color: #27ae60;
+  }
+
+  &--bad {
+    color: #f2994a;
+  }
+}
+.history-list {
+  //   margin: 0px -40px;
+}
+.history-list__item {
+  list-style: none;
+  list-style-type: none;
+}

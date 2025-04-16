@@ -1,0 +1,68 @@
+@import 'src/scss/mixins/index.scss';
+
+.login {
+  background-color: #f2f5f7;
+  @include abs-center;
+
+  height: 90vh;
+
+  .login-form {
+    width: 100%;
+
+    &-button {
+      width: 100%;
+    }
+  }
+
+  .ant-form-item-label {
+    label {
+      font-weight: 700;
+      color: #5b5c5d;
+    }
+  }
+
+  .login__form-wrapper {
+    background: white;
+    padding: 50px;
+    width: 500px;
+    border-radius: 16px;
+  }
+
+  .login__logo-img {
+    width: 90px;
+  }
+
+  .login__submit-btn {
+    background-color: #be0d1e;
+    color: white;
+    width: 100%;
+    border-color: transparent;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+
+    &:hover,
+    &:focus {
+      background-color: #be0d1e;
+      color: white;
+
+      border-color: transparent;
+    }
+
+    i {
+      margin-right: 5px;
+    }
+  }
+
+  .ant-input {
+    font-size: 14px !important;
+    background-color: #f2f5f7;
+    border-color: #f2f5f7;
+    line-height: 21px;
+
+    &:hover,
+    &:focus {
+      background-color: white;
+    }
+  }
+}

@@ -1,0 +1,18 @@
+.download-report__menu-item {
+  position: absolute;
+  z-index: 9999;
+}
+
+.download-report__menu-item li:nth-last-child(n+2) {
+  margin-bottom: -14px !important;
+}
+
+.download-report__menu-item > .ant-menu-item-only-child:hover {
+  background-color: #e6f7ff;
+}
+
+.download-report__menu-item
+  > .ant-menu-item-only-child
+  > .ant-menu-title-content:hover {
+  color: #5b5c5d;
+}

@@ -1,0 +1,112 @@
+.ant-table-pagination.ant-pagination {
+  margin: 16px 40px !important;
+}
+.panel--table-global {
+  height: calc(100vh - 135px) !important;
+
+  // .ant-table {
+  //   height: calc(100vh - 330px) !important;
+  // }
+
+  .ant-pagination {
+    // position: absolute;
+    // bottom: -95px;
+    // right: 0;
+
+    .anticon {
+      svg {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.page-spinner--table {
+  min-height: calc(100vh - 200px);
+}
+
+.wrap-table-global {
+  .ant-layout-content {
+    padding: 0 50px 0 50px !important;
+  }
+
+  .ant-table-body {
+    max-height: calc(100vh - 315px) !important;
+  }
+}
+
+.table-global__item {
+  margin-right: -20px;
+  margin-left: -20px;
+  max-width: inherit !important;
+
+  .ant-pagination {
+    margin-right: 20px !important; //replace plugin
+    margin-left: 20px !important; //replace plugin
+
+    .ant-pagination-item-link {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .anticon {
+      svg {
+        font-size: 12px !important;
+      }
+    }
+
+    .ant-pagination-options {
+      .ant-select-selector {
+        height: auto !important;
+      }
+    }
+  }
+}
+
+.table-global__title {
+  line-height: 32px !important;
+}
+
+.table-global__search-input {
+  border-color: transparent !important;
+  border-radius: 3px !important;
+
+  .ant-input-affix-wrapper {
+    border-color: transparent !important;
+    border-radius: 3px !important;
+  }
+
+  .ant-input-group-addon {
+    left: -40px !important;
+    z-index: 10;
+    background: transparent;
+  }
+
+  .ant-input-suffix {
+    margin-right: 35px;
+  }
+
+  .ant-btn-icon-only {
+    background: white;
+    padding: 0 10px;
+    border-radius: 0 3px 3px 0;
+  }
+}
+
+.table-global__search {
+  position: relative;
+
+  .table-global__search-close {
+    position: absolute;
+    top: -1px;
+    right: 10px;
+    z-index: 2;
+
+    .anticon {
+      svg {
+        font-size: 16px;
+      }
+    }
+  }
+}

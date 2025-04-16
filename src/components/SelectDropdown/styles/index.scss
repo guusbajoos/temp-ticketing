@@ -1,0 +1,17 @@
+.select-box {
+  text-align: center;
+  .ant-select {
+    width: 100%;
+  }
+  .ant-select-disabled {
+    .ant-select-selector {
+      border-color: #eaedef !important;
+      background: #eaedef !important;
+      color: #b1b4b5 !important;
+    }
+  }
+}
+
+.ant-select-dropdown {
+  position: absolute !important;
+}
