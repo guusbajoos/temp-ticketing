@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { CloseOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import {
-  Button,
+  Button, Checkbox,
   Col,
   Form,
   Input,
@@ -52,7 +52,8 @@ export function CategoriesList({ getCategoryList }) {
     subCategory1: null,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [currentName, setCurrentName] = useState('')
+  const [currentName, setCurrentName] = useState('');
+  const [jawsValidation, setJawsValidation] = useState(false);
 
   const handleOnClose = () => {
     setFormValues({
@@ -105,6 +106,7 @@ export function CategoriesList({ getCategoryList }) {
           name: item,
           level: formValues.level,
           parent: categoriesIds.subCategory1,
+          jawsMandatory: jawsValidation
         };
       }
     });
@@ -337,7 +339,7 @@ export function CategoriesList({ getCategoryList }) {
           )}
           {formValues.level === 2 && (
             <Form.Item
-              label="Sub Category1"
+              label="Sub Category 1"
               name="sub_category1"
               rules={[
                 {
@@ -427,6 +429,18 @@ export function CategoriesList({ getCategoryList }) {
             {formValues.name.map((item, index) => (
               <Tag key={index}>{item}</Tag>
             ))}
+          </Row>
+          <Row gutter={10}>
+            {(formValues.level === 2) && (
+                <Col xs={20}>
+                  <Checkbox
+                      value={jawsValidation}
+                      onClick={() => setJawsValidation(!jawsValidation)}
+                  >
+                    Add Rahang Information
+                  </Checkbox>
+                </Col>
+            )}
           </Row>
         </Form>
       </Modal>

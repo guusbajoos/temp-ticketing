@@ -27,7 +27,7 @@ export function TeamCapacity({ dashboardReport, isLoading }) {
   const containerMaxHeight = 679;
   const maxYAxisSteps = 100;
   const toolTip =
-      "Mengetahui jumlah ticket yang sedang di assign ke masing-masing agent";
+    "Mengetahui jumlah ticket yang sedang di assign ke masing-masing agent";
 
   useEffect(() => {
     if (!isEmpty(dashboardReport.ticketCapacities)) {
@@ -68,57 +68,55 @@ export function TeamCapacity({ dashboardReport, isLoading }) {
   };
 
   const teamCapacitiies = !isEmpty(dashboardReport.ticketCapacities)
-      ? dashboardReport.ticketCapacities.map((value) => {
+    ? dashboardReport.ticketCapacities.map((value) => {
         return {
           ...value,
           type: "Ticket Capacity",
         };
       })
-      : [];
+    : [];
 
   const dataChart = !isEmpty(teamCapacitiies)
-      ? teamCapacitiies.sort(function (a, b) {
+    ? teamCapacitiies.sort(function (a, b) {
         if (a.capacity < b.capacity) {
           return 1;
         }
         return -1;
       })
-      : [];
+    : [];
 
-  const remappingDataChart = dataChart.flatMap((item) =>
-      [
-        {
-          agentName: `${item.agentName}\nSLA Average: ${item.averageSlaDesc}`,
-          status: "Open",
-          value: item.openCapacity,
-        },
-        {
-          agentName: `${item.agentName}\nSLA Average: ${item.averageSlaDesc}`,
-          status: "In Progress",
-          value: item.inProgressCapacity,
-        },
-        {
-          agentName: `${item.agentName}\nSLA Average: ${item.averageSlaDesc}`,
-          status: "Escalate",
-          value: item.escalateCapacity,
-        },
-        {
-          agentName: `${item.agentName}\nSLA Average: ${item.averageSlaDesc}`,
-          status: "Feedback",
-          value: item.feedbackCapacity,
-        },
-        {
-          agentName: `${item.agentName}\nSLA Average: ${item.averageSlaDesc}`,
-          status: "Follow Up",
-          value: item.followUpCapacity,
-        },
-        {
-          agentName: `${item.agentName}\nSLA Average: ${item.averageSlaDesc}`,
-          status: "Closed",
-          value: item.closedCapacity,
-        },
-      ]// .filter((d) => d.value > 0)
-  );
+  const remappingDataChart = dataChart.flatMap((item) => [
+    {
+      agentName: `${item.agentName}\nSLA Average: ${item.averageSlaDesc}`,
+      status: "Open",
+      value: item.openCapacity,
+    },
+    {
+      agentName: `${item.agentName}\nSLA Average: ${item.averageSlaDesc}`,
+      status: "In Progress",
+      value: item.inProgressCapacity,
+    },
+    {
+      agentName: `${item.agentName}\nSLA Average: ${item.averageSlaDesc}`,
+      status: "Escalate",
+      value: item.escalateCapacity,
+    },
+    {
+      agentName: `${item.agentName}\nSLA Average: ${item.averageSlaDesc}`,
+      status: "Feedback",
+      value: item.feedbackCapacity,
+    },
+    {
+      agentName: `${item.agentName}\nSLA Average: ${item.averageSlaDesc}`,
+      status: "Follow Up",
+      value: item.followUpCapacity,
+    },
+    {
+      agentName: `${item.agentName}\nSLA Average: ${item.averageSlaDesc}`,
+      status: "Closed",
+      value: item.closedCapacity,
+    },
+  ]);
 
   const config = {
     data: remappingDataChart,
@@ -128,6 +126,9 @@ export function TeamCapacity({ dashboardReport, isLoading }) {
     seriesField: "status",
     color: ({ status }) => colorMap[status] || "#1890ff",
     label: {
+      formatter: (datum) => {
+        return datum.value > 0 ? datum.value : "";
+      },
       position: "middle",
       style: { fill: "#fff", fontSize: 12 },
     },
@@ -137,41 +138,34 @@ export function TeamCapacity({ dashboardReport, isLoading }) {
         value: datum.value,
       }),
     },
-    yAxis: {
-      label: {
-        style: { fontSize: 12 },
-        // formatter: (text) => text.replace("\n", " "), // Pastikan tidak terpotong
-        formatter: (text) => text.replace("abcxyz", " "), // Pastikan tidak terpotong
-      },
-    },
     barWidthRatio: 0.7,
   };
 
   return (
-      <div className="mb-40 complaint-rate">
-        <div className="mb-20 fw-bold text-md">
-          Agent Capacity{" "}
-          <Tooltip title={toolTip}>
-            <InfoCircleOutlined />
-          </Tooltip>
-        </div>
-        <div className="panel panel--secondary" style={chartContainerStyle}>
-          {isLoading ? (
-              <PageSpinner className="page-spinner--dashboard-complaint-rate" />
-          ) : (
-              <Bar
-                  {...config}
-                  autoFit={false}
-                  height={chartHeight}
-                  meta={{
-                    capacity: {
-                      ticks: yAxisTicks,
-                    },
-                  }}
-              />
-          )}
-        </div>
+    <div className="mb-40 complaint-rate">
+      <div className="mb-20 fw-bold text-md">
+        Agent Capacity{" "}
+        <Tooltip title={toolTip}>
+          <InfoCircleOutlined />
+        </Tooltip>
       </div>
+      <div className="panel panel--secondary" style={chartContainerStyle}>
+        {isLoading ? (
+          <PageSpinner className="page-spinner--dashboard-complaint-rate" />
+        ) : (
+          <Bar
+            {...config}
+            autoFit={false}
+            height={chartHeight}
+            meta={{
+              capacity: {
+                ticks: yAxisTicks,
+              },
+            }}
+          />
+        )}
+      </div>
+    </div>
   );
 }
 

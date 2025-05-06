@@ -2,6 +2,10 @@ import { wordsCapitalize } from "utils/index";
 
 export const columnsTicketCategories = [
   {
+    title: "Business Unit",
+    dataIndex: "business_unit",
+    render: (v) => wordsCapitalize(v) || "-",
+  },{
     title: "Category Name",
     dataIndex: "category_name",
     render: (v) => wordsCapitalize(v) || "-",
@@ -14,6 +18,10 @@ export const columnsTicketCategories = [
   {
     title: "Sub Category 2",
     dataIndex: "subsubcategory_name",
+    render: (v) => wordsCapitalize(v) || "-",
+  },{
+    title: "Created Date",
+    dataIndex: "created_date",
     render: (v) => wordsCapitalize(v) || "-",
   },
 ];
