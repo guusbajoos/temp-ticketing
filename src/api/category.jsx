@@ -7,4 +7,7 @@ export default {
   getCategoryBusiness(param) {
     return api.get(`/business${param ? param : ""}`);
   },
+  getCategoryByBusiness(param) {
+    return api.get(`/categories${param || ""}&level=0`);
+  },
 };

@@ -1,7 +1,13 @@
 /* eslint-disable react/prop-types */
-import { CloseOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import {
-  Button, Checkbox,
+  CloseOutlined, DeleteTwoTone, EditTwoTone,
+  FilterOutlined,
+  PlusOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
+import {
+  Button,
+  Checkbox,
   Col,
   Form,
   Input,
@@ -20,16 +26,16 @@ import { Content } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
 import { useTicketCategories } from "./hooks";
 import {
-  columnsTicketCategories,
   DEFAULT_VALUE_FORM,
   radioChoice,
 } from "./constants";
 import { isEmpty } from "lodash";
 import "../../components/Table/styles/index.scss";
-import { convertOptions, queryStringify } from "utils/index";
+import {convertOptions, queryStringify, wordsCapitalize} from "utils/index";
 import { connect } from "react-redux";
 import { getCategoryList } from "store/action/CategoryAction";
 import ticketCategoryApi from "api/ticket-categories";
+import { useBusiness } from "pages/ticket/TicketLists/component/Filter/hooks";
 
 export function CategoriesList({ getCategoryList }) {
   const [form] = Form.useForm();
@@ -38,6 +44,15 @@ export function CategoriesList({ getCategoryList }) {
     useTicketCategories();
   const { getTicketCategories } = ticketCategories;
   const { categoryList } = ticketCategories;
+  const {
+    getBusinessList,
+    business,
+    resetStatus: resetStatusBusiness,
+  } = useBusiness();
+  const { getBusiness } = business;
+  const [showFilter, setShowFilter] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
   const [state, setState] = useState({
     keyword: "",
     search: "",
@@ -46,13 +61,17 @@ export function CategoriesList({ getCategoryList }) {
   });
   const [isShowSearch, setIsShowSearch] = useState(false);
   const [isAddDataModalOpen, setIsAddDataModalOpen] = useState(false);
+  const [isEditDataModalOpen, setIsEditDataModalOpen] = useState(false);
   const [formValues, setFormValues] = useState(DEFAULT_VALUE_FORM);
+  const [categoryLevel, setCategoryLevel] = useState(0);
+  const [deleteId, setDeleteId] = useState(0);
+  const [categoryName, setCategoryName] = useState(0);
   const [categoriesIds, setCategoriesIds] = useState({
     category: null,
     subCategory1: null,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [currentName, setCurrentName] = useState('');
+  const [currentName, setCurrentName] = useState("");
   const [jawsValidation, setJawsValidation] = useState(false);
 
   const handleOnClose = () => {
@@ -63,6 +82,12 @@ export function CategoriesList({ getCategoryList }) {
     });
     form.setFieldValue("currentName", "");
     setIsAddDataModalOpen(!isAddDataModalOpen);
+    form.resetFields();
+  };
+
+  const handleOnEditClose = () => {
+    form.setFieldValue("existingName", "");
+    setIsEditDataModalOpen(!isEditDataModalOpen);
     form.resetFields();
   };
 
@@ -93,18 +118,21 @@ export function CategoriesList({ getCategoryList }) {
         return {
           name: item,
           level: formValues.level,
+          businessUnit: formValues.businessUnit,
           parent: null,
         };
       } else if (formValues.level == 1) {
         return {
           name: item,
           level: formValues.level,
+          businessUnit: formValues.businessUnit,
           parent: categoriesIds.category,
         };
       } else {
         return {
           name: item,
           level: formValues.level,
+          businessUnit: formValues.businessUnit,
           parent: categoriesIds.subCategory1,
           jawsMandatory: jawsValidation
         };
@@ -141,6 +169,7 @@ export function CategoriesList({ getCategoryList }) {
 
   useEffect(() => {
     getCategoryListData();
+    getBusinessList();
   }, [isAddDataModalOpen]);
 
   useEffect(() => {
@@ -161,6 +190,102 @@ export function CategoriesList({ getCategoryList }) {
       resetStatus();
     }
   }, [getTicketCategories.status]);
+
+  useEffect(() => {
+    if (getBusiness.status === "FAILED") {
+      api.error({
+        message: getBusiness.error.message,
+        description: getBusiness.error.description,
+        duration: 3,
+      });
+      resetStatusBusiness();
+    }
+  }, [getBusiness.status]);
+
+  const handleFilterShow = () => {
+    setShowFilter(!showFilter)
+  }
+
+  const handleDeleteConfirmationShow = (row) => {
+    const rowId = row.subsubcategory_id != null ? row.subsubcategory_id : row.subcategory_id != null ? row.subcategory_id : row.category_id;
+    const rowName = row.subsubcategory_id != null ? row.subsubcategory_name : row.subcategory_id != null ? row.subcategory_name : row.category_name;
+    console.log(row)
+    setDeleteId(rowId);
+    setCategoryName(rowName);
+    setShowDeleteConfirmation(!showDeleteConfirmation)
+  }
+
+  const handleOnDeleteClose = () => {
+    console.log('close alert');
+    setShowDeleteConfirmation(!showDeleteConfirmation);
+  };
+
+  const handleConfirmDelete = () => {
+    console.log('confirm alert');
+    setShowDeleteConfirmation(!showDeleteConfirmation);
+  };
+
+  const handleEditConfirmationShow = (row) => {
+    const rowName = row.subsubcategory_id != null ? row.subsubcategory_name : row.subcategory_id != null ? row.subcategory_name : row.category_name;
+    const rowLevel = row.subsubcategory_id != null ? 2 : row.subcategory_id != null ? 1 : 0;
+    console.log('name = ',rowName);
+    console.log('level = ',rowLevel);
+    setCategoryLevel(rowLevel);
+    form.setFieldValue("existingName", rowName)
+    // form.setFieldValue("currentName", "");;
+    setIsEditDataModalOpen(!isEditDataModalOpen);
+  }
+
+  const columnsTicketCategories = [
+    {
+      title: "Business Unit",
+      dataIndex: "business_unit",
+      render: (v) => wordsCapitalize(v) || "-",
+    },{
+      title: "Category Name",
+      dataIndex: "category_name",
+      render: (v) => wordsCapitalize(v) || "-",
+    },
+    {
+      title: "Sub Category 1",
+      dataIndex: "subcategory_name",
+      render: (v) => wordsCapitalize(v) || "-",
+    },
+    {
+      title: "Sub Category 2",
+      dataIndex: "subsubcategory_name",
+      render: (v) => wordsCapitalize(v) || "-",
+    },{
+      title: "Created Date",
+      dataIndex: "created_date",
+      render: (v) => wordsCapitalize(v) || "-",
+    },
+    {
+      title: 'Action',
+      render: (row) => (
+          <>
+            <Tooltip title="Edit Data">
+              <Button
+                  type="text"
+                  onClick={()=>handleEditConfirmationShow(row)}
+                  rel="noopener noreferrer"
+                  target="_blank">
+                <EditTwoTone twoToneColor="#0e07e6"/>
+              </Button>
+            </Tooltip>
+            <Tooltip title="Delete Data">
+              <Button
+                  type="text"
+                  onClick={()=>handleDeleteConfirmationShow(row)}
+                  rel="noopener noreferrer"
+                  target="_blank">
+                <DeleteTwoTone twoToneColor="#b50537"/>
+              </Button>
+            </Tooltip>
+          </>
+      ),
+    }
+  ];
 
   return (
     <>
@@ -227,6 +352,13 @@ export function CategoriesList({ getCategoryList }) {
                 className="mr-10"
               />
             </Tooltip>
+            <Tooltip title="Filter">
+              <Button
+                  icon={<FilterOutlined />}
+                  className="mr-10"
+                  onClick={handleFilterShow}
+              />
+            </Tooltip>
             <Tooltip title="Add Data">
               <Button
                 icon={<PlusOutlined />}
@@ -283,7 +415,7 @@ export function CategoriesList({ getCategoryList }) {
             htmlType="submit"
             type="primary"
             form="addCategoriesForm"
-            disabled={formValues.name.length < 1}
+            // disabled={formValues.name.length < 1 || !formValues.businessUnit.length}
             loading={isLoading}
           >
             Submit
@@ -303,6 +435,34 @@ export function CategoriesList({ getCategoryList }) {
               ))}
             </Radio.Group>
           </Form.Item>
+
+          {(formValues.level === 0) && (
+          <Form.Item
+            label="Business Unit"
+            name="businessUnit"
+            rules={[{ required: true, message: "Please select Business Unit" }]}
+          >
+            <Select
+              className="mb-10"
+              showSearch
+              filterOption={(input, option) => {
+                return (
+                  option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                );
+              }}
+              options={
+                !isEmpty(getBusiness.data)
+                  ? convertOptions(getBusiness.data, "name", "name")
+                  : []
+              }
+              placeholder={"Select Business Unit"}
+              onChange={(c) =>
+                setFormValues((x) => ({ ...x, businessUnit: c }))
+              }
+            />
+          </Form.Item>
+          )}
+
           {(formValues.level === 1 || formValues.level === 2) && (
             <Form.Item
               label="Category"
@@ -339,7 +499,7 @@ export function CategoriesList({ getCategoryList }) {
           )}
           {formValues.level === 2 && (
             <Form.Item
-              label="Sub Category 1"
+              label="Sub Category1"
               name="sub_category1"
               rules={[
                 {
@@ -418,7 +578,7 @@ export function CategoriesList({ getCategoryList }) {
                     name: [...x.name, currentName],
                   }));
                   form.setFieldValue("currentName", "");
-                  setCurrentName("")
+                  setCurrentName("");
                 }}
               >
                 Add
@@ -444,6 +604,63 @@ export function CategoriesList({ getCategoryList }) {
           </Row>
         </Form>
       </Modal>
+
+      <Modal
+          visible={showDeleteConfirmation}
+          footer={undefined}
+          destroyOnClose
+          title="Delete Confirmation"
+          onCancel={() => handleOnDeleteClose()}
+          onOk={() => handleConfirmDelete()}
+      >
+        <h3>Are you sure you want to delete this category : {categoryName}? </h3>
+      </Modal>
+
+      <Modal
+          forceRender
+          destroyOnClose
+          title="Edit Category"
+          visible={isEditDataModalOpen}
+          // onOk={() => onSubmit()}
+          onCancel={() => handleOnEditClose()}
+          footer={[
+            <Button
+                size="large"
+                key="back"
+                onClick={() => handleOnEditClose()}
+                loading={isLoading}
+            >
+              Cancel
+            </Button>,
+            <Button
+                size="large"
+                key="submit"
+                htmlType="submit"
+                type="primary"
+                form="editCategoriesForm"
+                loading={isLoading}
+            >
+              Submit
+            </Button>,
+          ]}
+      >
+        <Form onFinish={() => onSubmit()} form={form} id="editCategoriesForm">
+          <Row gutter={5}>
+            <Col xs={20}>
+              <Form.Item
+                  label={categoryLevel == 0 ? "Category Name" : categoryLevel == 1 ? "Sub Category 1 Name" : "Sub Category 2 Name"}
+                  name="existingName"
+                  validateTrigger="onBlur"
+              >
+                <Input
+                    size="large"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
+
     </>
   );
 }

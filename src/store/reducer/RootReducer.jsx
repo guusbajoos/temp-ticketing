@@ -30,6 +30,7 @@ import { getBusiness } from "./BusinessReducer";
 import { getClinicLocation } from "./ClinicLocationReducer";
 import { getTicketRecommendation } from "./TicketRecomendationReducer";
 import { getClinicReport } from "./ClinicReportReducer";
+import { categoryByBusiness } from "./CategoryReducer/category-by-business";
 
 const rootReducer = combineReducers({
   userList,
@@ -63,7 +64,8 @@ const rootReducer = combineReducers({
   getBusiness,
   getClinicLocation,
   getTicketRecommendation,
-  getClinicReport
+  getClinicReport,
+  categoryByBusiness
 });
 
 export default rootReducer;
