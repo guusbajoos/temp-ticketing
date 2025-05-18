@@ -9,5 +9,17 @@ export default {
     return api.post(
       `/categories/create`, payload
     )
+  },
+
+  editCategory(payload) {
+    return api.put(
+        `/categories/bulk`, payload
+    )
+  },
+
+  deleteCategory(deleteId) {
+    return api.delete(
+        `/categories?id=${deleteId}`
+    )
   }
 }

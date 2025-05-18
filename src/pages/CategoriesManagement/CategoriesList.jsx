@@ -63,7 +63,6 @@ export function CategoriesList({ getCategoryList }) {
   const [isAddDataModalOpen, setIsAddDataModalOpen] = useState(false);
   const [isEditDataModalOpen, setIsEditDataModalOpen] = useState(false);
   const [formValues, setFormValues] = useState(DEFAULT_VALUE_FORM);
-  const [categoryLevel, setCategoryLevel] = useState(0);
   const [deleteId, setDeleteId] = useState(0);
   const [categoryName, setCategoryName] = useState(0);
   const [categoriesIds, setCategoriesIds] = useState({
@@ -73,6 +72,8 @@ export function CategoriesList({ getCategoryList }) {
   const [isLoading, setIsLoading] = useState(false);
   const [currentName, setCurrentName] = useState("");
   const [jawsValidation, setJawsValidation] = useState(false);
+  const [isSubCategory1Exist, setIsSubCategory1Exist] = useState(false);
+  const [isSubCategory2Exist, setIsSubCategory2Exist] = useState(false);
 
   const handleOnClose = () => {
     setFormValues({
@@ -86,7 +87,11 @@ export function CategoriesList({ getCategoryList }) {
   };
 
   const handleOnEditClose = () => {
-    form.setFieldValue("existingName", "");
+    form.setFieldValue("existingCategoryName", "");
+    form.setFieldValue("existingSubCategory1Name", "");
+    form.setFieldValue("existingSubCategory2Name", "");
+    setIsSubCategory1Exist(false);
+    setIsSubCategory2Exist(false);
     setIsEditDataModalOpen(!isEditDataModalOpen);
     form.resetFields();
   };
@@ -155,6 +160,28 @@ export function CategoriesList({ getCategoryList }) {
     }
   };
 
+  const onSubmitEdit = async () => {
+    setIsLoading(true);
+    const payload = [
+      // construct array of object contain id and name of category, sub category 1 and sub category 2
+    ];
+
+    try {
+      const response = await ticketCategoryApi.editCategory(payload);
+      if (response.status == 200) {
+        message.success("Edit Data Success");
+        handleOnClose();
+      } else {
+        message.error("Edit Data Failed");
+      }
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      message.error(errMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleOnChangeRadio = (e) => {
     setFormValues({
       level: e.target.value,
@@ -170,7 +197,7 @@ export function CategoriesList({ getCategoryList }) {
   useEffect(() => {
     getCategoryListData();
     getBusinessList();
-  }, [isAddDataModalOpen]);
+  }, [isAddDataModalOpen, showDeleteConfirmation, isEditDataModalOpen]);
 
   useEffect(() => {
     getTicketCategoriesList({
@@ -178,7 +205,7 @@ export function CategoriesList({ getCategoryList }) {
       page: state.currentPage,
       size: state.perPage,
     });
-  }, [state.search, state.currentPage, state.perPage, isAddDataModalOpen]);
+  }, [state.search, state.currentPage, state.perPage, isAddDataModalOpen, showDeleteConfirmation, isEditDataModalOpen]);
 
   useEffect(() => {
     if (getTicketCategories.status === "FAILED") {
@@ -209,31 +236,47 @@ export function CategoriesList({ getCategoryList }) {
   const handleDeleteConfirmationShow = (row) => {
     const rowId = row.subsubcategory_id != null ? row.subsubcategory_id : row.subcategory_id != null ? row.subcategory_id : row.category_id;
     const rowName = row.subsubcategory_id != null ? row.subsubcategory_name : row.subcategory_id != null ? row.subcategory_name : row.category_name;
-    console.log(row)
     setDeleteId(rowId);
     setCategoryName(rowName);
     setShowDeleteConfirmation(!showDeleteConfirmation)
   }
 
   const handleOnDeleteClose = () => {
-    console.log('close alert');
     setShowDeleteConfirmation(!showDeleteConfirmation);
+    setDeleteId(0);
   };
 
-  const handleConfirmDelete = () => {
-    console.log('confirm alert');
-    setShowDeleteConfirmation(!showDeleteConfirmation);
+  const handleOnDeleteConfirm = async () => {
+    setIsLoading(true);
+    try {
+      const response = await ticketCategoryApi.deleteCategory(deleteId);
+      if (response.status == 200) {
+        message.success("Delete Data Success");
+        setDeleteId(0);
+        setShowDeleteConfirmation(!showDeleteConfirmation);
+      } else {
+        message.error("Delete Data Failed");
+      }
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      message.error(errMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleEditConfirmationShow = (row) => {
-    const rowName = row.subsubcategory_id != null ? row.subsubcategory_name : row.subcategory_id != null ? row.subcategory_name : row.category_name;
-    const rowLevel = row.subsubcategory_id != null ? 2 : row.subcategory_id != null ? 1 : 0;
-    console.log('name = ',rowName);
-    console.log('level = ',rowLevel);
-    setCategoryLevel(rowLevel);
-    form.setFieldValue("existingName", rowName)
-    // form.setFieldValue("currentName", "");;
     setIsEditDataModalOpen(!isEditDataModalOpen);
+    const categoryName = row.category_name;
+    const subcategory1Name = row.subcategory_name;
+    const subcategory2Name = row.subsubcategory_name;
+    if (subcategory1Name !== '(no subcategory1 assigned)')
+      setIsSubCategory1Exist(true);
+    if (subcategory2Name !== '(no subcategory2 assigned)')
+      setIsSubCategory2Exist(true);
+    form.setFieldValue("existingCategoryName", categoryName);
+    form.setFieldValue("existingSubCategory1Name", subcategory1Name);
+    form.setFieldValue("existingSubCategory2Name", subcategory2Name);
   }
 
   const columnsTicketCategories = [
@@ -611,7 +654,7 @@ export function CategoriesList({ getCategoryList }) {
           destroyOnClose
           title="Delete Confirmation"
           onCancel={() => handleOnDeleteClose()}
-          onOk={() => handleConfirmDelete()}
+          onOk={() => handleOnDeleteConfirm()}
       >
         <h3>Are you sure you want to delete this category : {categoryName}? </h3>
       </Modal>
@@ -644,18 +687,40 @@ export function CategoriesList({ getCategoryList }) {
             </Button>,
           ]}
       >
-        <Form onFinish={() => onSubmit()} form={form} id="editCategoriesForm">
+        <Form onFinish={() => onSubmitEdit()} form={form} id="editCategoriesForm">
           <Row gutter={5}>
             <Col xs={20}>
               <Form.Item
-                  label={categoryLevel == 0 ? "Category Name" : categoryLevel == 1 ? "Sub Category 1 Name" : "Sub Category 2 Name"}
-                  name="existingName"
+                  label="Category Name"
+                  name="existingCategoryName"
                   validateTrigger="onBlur"
               >
                 <Input
                     size="large"
                 />
               </Form.Item>
+              {(isSubCategory1Exist) && (
+                <Form.Item
+                    label="Sub Category 1 Name"
+                    name="existingSubCategory1Name"
+                    validateTrigger="onBlur"
+                >
+                  <Input
+                      size="large"
+                  />
+                </Form.Item>
+              )}
+              {(isSubCategory2Exist) && (
+                <Form.Item
+                    label="Sub Category 2 Name"
+                    name="existingSubCategory2Name"
+                    validateTrigger="onBlur"
+                >
+                  <Input
+                      size="large"
+                  />
+                </Form.Item>
+              )}
             </Col>
           </Row>
         </Form>
