@@ -20,7 +20,7 @@ import {
 } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import { isEmpty } from "lodash";
-import {connect, useSelector} from "react-redux";
+import { connect, useSelector } from "react-redux";
 import moment from "moment";
 import SelectDropdown from "components/SelectDropdown";
 import TicketApi from "api/ticket";
@@ -29,7 +29,10 @@ import JawsApi from "api/jaws";
 import { convertOptions } from "../../../../../utils";
 // import { getTeamList } from 'store/action/TeamAction';
 import { getTicketList, getPatientDetailList } from "store/action/TicketAction";
-import { getCategoryList, getCategoryByBusiness } from "store/action/CategoryAction";
+import {
+  getCategoryList,
+  getCategoryByBusiness,
+} from "store/action/CategoryAction";
 
 import {
   statusOptions,
@@ -45,19 +48,23 @@ import { ConsoleSqlOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import EditorJodit from "pages/ticket/EditTicket/components/JoditEditor";
 import { config } from "./config";
 import dayjs from "dayjs";
-import { useBusiness, useClinicLocation, useTicketRecommendation } from "./hooks";
+import {
+  useBusiness,
+  useClinicLocation,
+  useTicketRecommendation,
+} from "./hooks";
 import api from "api/index";
 import { Link } from "react-router-dom";
 const { confirm } = Modal;
 
 export const ModalAddData = ({
-                               getCategoryByBusiness,
-                               showModalAddData,
-                               handleHideModalAddData,
-                               setShowModalAddData,
-                               teamList,
-                               categoryList,
-                             }) => {
+  getCategoryByBusiness,
+  showModalAddData,
+  handleHideModalAddData,
+  setShowModalAddData,
+  teamList,
+  categoryList,
+}) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [rahangPage, setRahangPage] = useState({
@@ -81,7 +88,7 @@ export const ModalAddData = ({
   const [patientList, setPatientList] = useState([]);
   const [patientSoNumbers, setPatientSoNumbers] = useState([]);
   const [searchPhoneNumber, setSearchPhoneNumber] = useState("");
-  const [title, setTitle] = useState("")
+  const [title, setTitle] = useState("");
 
   function next(type) {
     if (type === "rahang_atas") {
@@ -131,10 +138,10 @@ export const ModalAddData = ({
 
   const { getBusinessList, business, resetStatus } = useBusiness();
 
-  const {getBusiness} = business
+  const { getBusiness } = business;
 
   const categoryByBusiness = useSelector(
-      (state) => state["categoryByBusiness"]
+    (state) => state["categoryByBusiness"]
   );
 
   const handleBusinessUnitChange = async (value) => {
@@ -149,8 +156,8 @@ export const ModalAddData = ({
   };
 
   useEffect(() => {
-    getBusinessList()
-  }, [])
+    getBusinessList();
+  }, []);
 
   useEffect(() => {
     if (getBusiness.status === "FAILED") {
@@ -163,18 +170,21 @@ export const ModalAddData = ({
     }
   }, [getBusiness.status]);
 
-  const { getTicketRecommendationList, ticketRecommendation, resetStatus: resetStatusTicketRecommendation } =
-      useTicketRecommendation();
+  const {
+    getTicketRecommendationList,
+    ticketRecommendation,
+    resetStatus: resetStatusTicketRecommendation,
+  } = useTicketRecommendation();
 
-  const {getTicketRecommendation} = ticketRecommendation
+  const { getTicketRecommendation } = ticketRecommendation;
 
   useEffect(() => {
-    if(title !== ""){
+    if (title !== "") {
       getTicketRecommendationList({
-        keyword: title
-      })
+        keyword: title,
+      });
     }
-  }, [title])
+  }, [title]);
 
   useEffect(() => {
     if (getTicketRecommendation.status === "FAILED") {
@@ -187,18 +197,21 @@ export const ModalAddData = ({
     }
   }, [getTicketRecommendation.status]);
 
-  const { getClinicLocationList, clinicLocation, resetStatus: resetStatusClinicLocation } =
-      useClinicLocation();
+  const {
+    getClinicLocationList,
+    clinicLocation,
+    resetStatus: resetStatusClinicLocation,
+  } = useClinicLocation();
 
-  const {getClinicLocation} = clinicLocation
+  const { getClinicLocation } = clinicLocation;
 
   useEffect(() => {
     getClinicLocationList({
       page: 1,
       size: Number.MAX_SAFE_INTEGER,
       sort: "clinicName,ASC",
-    })
-  }, [])
+    });
+  }, []);
 
   useEffect(() => {
     if (getClinicLocation.status === "FAILED") {
@@ -268,29 +281,31 @@ export const ModalAddData = ({
       try {
         setIsLoadingButton(true);
         await TicketApi.addTicket(
-            removeSpaceTickets(values.title),
-            values.infobipChatId,
-            resultDescription,
-            values.assigned_team,
-            (values.agent = agent.id),
-            values.status,
-            values.source,
-            values.urgency,
-            values.category,
-            values.sub_category_1,
-            values.sub_category_2,
-            values.incoming_time,
-            values.due_date,
-            values.patient_id,
-            values.patient_name,
-            values.phone_number,
-            values.so_number,
-            values.medical_record,
-            ra ? ra.map((item) => Number(item)) : [],
-            rb ? rb.map((item) => Number(item)) : [],
-            values.businessUnit,
-            values.clinicName,
-            getClinicLocation.data.currentElements.find(el => el.clinicName === values.clinicName).idClinic
+          removeSpaceTickets(values.title),
+          values.infobipChatId,
+          resultDescription,
+          values.assigned_team,
+          (values.agent = agent.id),
+          values.status,
+          values.source,
+          values.urgency,
+          values.category,
+          values.sub_category_1,
+          values.sub_category_2,
+          values.incoming_time,
+          values.due_date,
+          values.patient_id,
+          values.patient_name,
+          values.phone_number,
+          values.so_number,
+          values.medical_record,
+          ra ? ra.map((item) => Number(item)) : [],
+          rb ? rb.map((item) => Number(item)) : [],
+          values.businessUnit,
+          values.clinicName,
+          getClinicLocation.data.currentElements.find(
+            (el) => el.clinicName === values.clinicName
+          ).idClinic
         );
         message.success("Success Inserting Ticket Data");
         setIsRahangSetActive(false);
@@ -330,26 +345,26 @@ export const ModalAddData = ({
   };
 
   const categorySelectedArray = filterSelectedCategory(
-      categoryByBusiness?.data,
-      selectedCategory,
-      null,
-      "category"
+    categoryByBusiness?.data,
+    selectedCategory,
+    null,
+    "category"
   );
 
   const subCategory1Array = !isEmpty(categorySelectedArray)
-      ? categorySelectedArray[0].subcategories
-      : [];
+    ? categorySelectedArray[0].subcategories
+    : [];
 
   const subCategory1SelectedArray = filterSelectedCategory(
-      subCategory1Array,
-      selectedSubCategory1,
-      null,
-      "subCategory1"
+    subCategory1Array,
+    selectedSubCategory1,
+    null,
+    "subCategory1"
   );
 
   const subCategory2Array = !isEmpty(subCategory1SelectedArray)
-      ? subCategory1SelectedArray[0].subcategories
-      : [];
+    ? subCategory1SelectedArray[0].subcategories
+    : [];
 
   const handleFormValuesChange = (changedValues) => {
     const formFieldName = Object.keys(changedValues)[0];
@@ -385,9 +400,9 @@ export const ModalAddData = ({
     } else if (formFieldName === "urgency") {
       form.setFieldsValue({
         due_date:
-            changedValues[formFieldName] === "HIGH"
-                ? moment().add(5, "days")
-                : moment().add(3, "days"),
+          changedValues[formFieldName] === "HIGH"
+            ? moment().add(5, "days")
+            : moment().add(3, "days"),
       });
       let badgeClassUrgency = "";
       switch (changedValues[formFieldName]) {
@@ -486,9 +501,9 @@ export const ModalAddData = ({
     setIsRahangSetActive(false);
 
     const { data } = await JawsApi.validation(
-        category,
-        subCategory1,
-        subCategory2
+      category,
+      subCategory1,
+      subCategory2
     );
 
     if (data.mandatory) {
@@ -515,8 +530,8 @@ export const ModalAddData = ({
     try {
       setIsLoadingPatient(true);
       const { data } = await TicketApi.getPatientDetailList(
-          page,
-          newValuePhoneNumber
+        page,
+        newValuePhoneNumber
       );
       setPatientList(data?.data);
       setIsLoadingPatient(false);
@@ -558,14 +573,14 @@ export const ModalAddData = ({
       title: "Action",
       key: "action",
       render: (record) => (
-          <Button
-              type="default"
-              size="middle"
-              primary
-              onClick={() => handleSelectedPatient(record)}
-          >
-            Choose Patient
-          </Button>
+        <Button
+          type="default"
+          size="middle"
+          primary
+          onClick={() => handleSelectedPatient(record)}
+        >
+          Choose Patient
+        </Button>
       ),
     },
   ];
@@ -575,654 +590,663 @@ export const ModalAddData = ({
   const now = new Date();
 
   return (
-      <Modal
-          open={showModalAddData}
-          title="Create New Ticket"
-          centered
-          onCancel={() => {
-            confirm({
-              title: `Discard unsaved changes`,
-              okText: "Discard",
-              okType: "danger",
-              icon: <QuestionCircleOutlined color="#A4A4A4" />,
-              width: 520,
-              content: "If you discard, you will lose any changes you have made.",
-              cancelText: "Cancel",
-              onOk() {
-                form.resetFields();
-                handleHideModalAddData();
-                setShowModalAddData(false);
-                setIsRahangSetActive(false);
-                setDescription("");
-                setDataDescription({
-                  message: "",
-                  status: false,
-                });
-              },
+    <Modal
+      open={showModalAddData}
+      title="Create New Ticket"
+      centered
+      onCancel={() => {
+        confirm({
+          title: `Discard unsaved changes`,
+          okText: "Discard",
+          okType: "danger",
+          icon: <QuestionCircleOutlined color="#A4A4A4" />,
+          width: 520,
+          content: "If you discard, you will lose any changes you have made.",
+          cancelText: "Cancel",
+          onOk() {
+            form.resetFields();
+            handleHideModalAddData();
+            setShowModalAddData(false);
+            setIsRahangSetActive(false);
+            setDescription("");
+            setDataDescription({
+              message: "",
+              status: false,
             });
-          }}
-          className="modal-add"
-          maskClosable={false}
-          footer={[
-            <Button key="back" onClick={handlePreventWithoutSave}>
-              Cancel
-            </Button>,
-            <Button
-                key="submit"
-                htmlType="submit"
-                type="primary"
-                form="add-modal-all-tickets"
-                onClick={() => {
-                  if (description === "") {
-                    setDataDescription({
-                      message: "Please insert description",
-                      status: true,
-                    });
-                  } else if (description === "<p><br></p>") {
-                    setDataDescription({
-                      message: "Please insert description",
-                      status: true,
-                    });
-                  } else {
-                    setDataDescription({
-                      message: "",
-                      status: false,
-                    });
-                  }
-                }}
-                loading={isLoadingButton}
-            >
-              Save
-            </Button>,
-          ]}
-      >
-        <Form
-            form={form}
-            layout="vertical"
-            onValuesChange={handleFormValuesChange}
-            id={"add-modal-all-tickets"}
-            onFinish={handleSubmitAddData}
-        >
-          <Form.Item
-              label="Title"
-              name="title"
-              rules={[{ required: true, message: "Please insert Title" }]}
-          >
-            <Input size="large" placeholder="Insert Title" onChange={(e) => {
-              setTitle(e.target.value)
-              form.setFieldValue('title', e.target.value)
-            }}/>
-          </Form.Item>
-          <div style={{
-            width: '100%',
-            overflowWrap: "break-word"
-          }}>
-            {
-              (getTicketRecommendation.data.length !== 0  && title.length !== 0)? (
-                  getTicketRecommendation.data.map(item => (
-                      <Link key={item.number} to={`/edit-ticket/edit?id=${item.number}`} style={{
-                        textDecoration: 'underline',
-                        color: 'blue',
-                        whiteSpace: 'nowrap',
-                        marginRight: '5px',
-                        marginLeft: '5px'
-                      }}
-                            target="#"
-                      >
-                        {item.title}
-                      </Link>
-                  ))
-              ) : null
+          },
+        });
+      }}
+      className="modal-add"
+      maskClosable={false}
+      footer={[
+        <Button key="back" onClick={handlePreventWithoutSave}>
+          Cancel
+        </Button>,
+        <Button
+          key="submit"
+          htmlType="submit"
+          type="primary"
+          form="add-modal-all-tickets"
+          onClick={() => {
+            if (description === "") {
+              setDataDescription({
+                message: "Please insert description",
+                status: true,
+              });
+            } else if (description === "<p><br></p>") {
+              setDataDescription({
+                message: "Please insert description",
+                status: true,
+              });
+            } else {
+              setDataDescription({
+                message: "",
+                status: false,
+              });
             }
-          </div>
-          <Form.Item
-              label="Infobip Chat ID"
-              name="infobipChatId"
-              rules={[{ required: false }]}
-          >
-            <Input size="large" placeholder="Insert Infobip Chat ID" />
-          </Form.Item>
-
-          <div className="mb-20">
-            <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0px 7px",
-                  marginBottom: "5px",
-                }}
-            >
-              <span style={{ color: "red" }}>*</span>
-              <label htmlFor="Description">Description</label>
-            </div>
-            <EditorJodit
-                isCreateTicket={true}
-                config={config}
-                value={description}
-                setValue={setDescription}
-            />
-            {dataDescription.status && (
-                <div className="ant-form-item-explain-error mb-10">
-                  {dataDescription.message}
-                </div>
-            )}
-          </div>
-
-          <Row gutter={[16, 0]}>
-            <Col xs={8}>
-              <Form.Item
-                  label="Business Unit"
-                  name="businessUnit"
-                  rules={[
-                    { required: true, message: "Please select Business Unit" },
-                  ]}
-              >
-                <Select
-                    className="mb-10"
-                    showSearch
-                    filterOption={(input, option) => {
-                      return (
-                          option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                      );
-                    }}
-                    options={
-                      !isEmpty(getBusiness.data)
-                          ? convertOptions(getBusiness.data, "name", "name")
-                          : []
-                    }
-                    placeholder={"Select Business Unit"}
-                    onChange={handleBusinessUnitChange}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={8}>
-              <Form.Item
-                  label="Clinic Location"
-                  name="clinicName"
-                  rules={[
-                    { required: false, message: "Please Select Clinic Location" },
-                  ]}
-              >
-                <Select
-                    showSearch
-                    filterOption={(input, option) => {
-                      return (
-                          option.label
-                              .toLowerCase()
-                              .indexOf(input.toLowerCase()) >= 0
-                      );
-                    }}
-                    options={
-                      !isEmpty(getClinicLocation.data)
-                          ? convertOptions(getClinicLocation.data.currentElements, "clinicName", "clinicName")
-                          : []
-                    }
-                    placeholder={"Select Clinic Location"}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={[16, 0]}>
-            <Col xs={8}>
-              <Form.Item
-                  label="Category"
-                  name="category"
-                  rules={[{ required: true, message: "Please select Category" }]}
-              >
-                <Select
-                    className="mb-10"
-                    showSearch
-                    filterOption={(input, option) => {
-                      return (
-                          option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                      );
-                    }}
-                    options={
-                      !isEmpty(categoryByBusiness?.data)
-                          ? convertOptions(categoryByBusiness?.data, "name", "id")
-                          : []
-                    }
-                    placeholder={"Select Category"}
-                    onChange={handleCategory}
-                    disabled={
-                        categoryByBusiness.status === "LOADING" ||
-                        form.getFieldValue("businessUnit") === ""
-                    }
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={8}>
-              <Form.Item
-                  label="Sub Category 1"
-                  name="sub_category_1"
-                  rules={[
-                    { required: true, message: "Please select Sub Category 1" },
-                  ]}
-              >
-                <Select
-                    className="mb-10"
-                    showSearch
-                    filterOption={(input, option) => {
-                      return (
-                          option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                      );
-                    }}
-                    disabled={isCategorySelected ? false : true}
-                    options={
-                      !isEmpty(subCategory1Array)
-                          ? convertOptions(subCategory1Array, "name", "id")
-                          : []
-                    }
-                    placeholder={"Select Sub Category 1"}
-                    onChange={handleSubCat1}
-                />
-              </Form.Item>
-            </Col>
-
-            <Col xs={8}>
-              <Form.Item
-                  label="Sub Category 2"
-                  name="sub_category_2"
-                  rules={[
-                    { required: true, message: "Please select Sub Category 2" },
-                  ]}
-              >
-                <Select
-                    className="mb-10"
-                    showSearch
-                    filterOption={(input, option) => {
-                      return (
-                          option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                      );
-                    }}
-                    disabled={isSubCategory1Selected ? false : true}
-                    options={
-                      !isEmpty(subCategory2Array)
-                          ? convertOptions(subCategory2Array, "name", "id")
-                          : []
-                    }
-                    placeholder={"Select Sub Category 2"}
-                    onChange={handleRahang}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {isRahangSetActive && (
-              <Col xs={24}>
-                <Row>
-                  <Col xs={24}>
-                    <div className="rahang-set">
-                      <p>Set Bermasalah</p>
-
-                      <div className="rahang-set-value">
-                        <div
-                            className="icon-container icon-container--left left-nav-homepage"
-                            onClick={() => previous("rahang_atas")}
-                        >
-                          <img
-                              style={{
-                                position: "absolute",
-                                top: "0px",
-                                left: "0px",
-                              }}
-                              src={`https://rata-web-production-assets.s3.ap-southeast-1.amazonaws.com/icons/chevron-right-plain.svg`}
-                              alt="left"
-                          />
-                        </div>
-
-                        <Row>
-                          <Col xs={3}>
-                            <p className="mb-10">Rahang Atas</p>
-                          </Col>
-
-                          <Col xs={24}>
-                            <Form.Item name="ra">
-                              <Checkbox.Group
-                                  style={{ width: "95%", margin: "0px auto" }}
-                              >
-                                <Carousel
-                                    {...settings}
-                                    ref={(node) => (refRahangAtasContainer = node)}
-                                >
-                                  {plainOptions.map((item, key) => (
-                                      <Row key={key}>
-                                        <Col span={7}>
-                                          <Checkbox value={item}>{item}</Checkbox>
-                                        </Col>
-                                      </Row>
-                                  ))}
-                                </Carousel>
-                              </Checkbox.Group>
-                            </Form.Item>
-                          </Col>
-                        </Row>
-
-                        <div
-                            className="icon-container icon-container--right right-nav-homepage"
-                            onClick={() => next("rahang_atas")}
-                        >
-                          <img
-                              style={{
-                                position: "absolute",
-                                top: "0px",
-                                left: "0px",
-                              }}
-                              src={`https://rata-web-production-assets.s3.ap-southeast-1.amazonaws.com/icons/chevron-right-plain.svg`}
-                              alt="right"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="rahang-set-value mt-4">
-                        <div
-                            className="icon-container icon-container--left left-nav-homepage"
-                            onClick={() => previous("rahang_bawah")}
-                        >
-                          <img
-                              style={{
-                                position: "absolute",
-                                top: "0px",
-                                left: "0px",
-                              }}
-                              src={`https://rata-web-production-assets.s3.ap-southeast-1.amazonaws.com/icons/chevron-right-plain.svg`}
-                              alt="left"
-                          />
-                        </div>
-
-                        <Row>
-                          <Col xs={6}>
-                            <p className="mb-10">Rahang Bawah</p>
-                          </Col>
-
-                          <Col xs={24}>
-                            <Form.Item name="rb">
-                              <Checkbox.Group
-                                  style={{ width: "95%", margin: "0px auto" }}
-                              >
-                                <Carousel
-                                    {...settings}
-                                    ref={(node) => (refRahangBawahContainer = node)}
-                                >
-                                  {plainOptions.map((item, key) => (
-                                      <Row key={key}>
-                                        <Col span={7}>
-                                          <Checkbox value={item}>{item}</Checkbox>
-                                        </Col>
-                                      </Row>
-                                  ))}
-                                </Carousel>
-                              </Checkbox.Group>
-                            </Form.Item>
-                          </Col>
-                        </Row>
-
-                        <div
-                            className="icon-container icon-container--right right-nav-homepage"
-                            onClick={() => next("rahang_bawah")}
-                        >
-                          <img
-                              style={{
-                                position: "absolute",
-                                top: "0px",
-                                left: "0px",
-                              }}
-                              src={`https://rata-web-production-assets.s3.ap-southeast-1.amazonaws.com/icons/chevron-right-plain.svg`}
-                              alt="right"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </Col>
-                </Row>
-              </Col>
-          )}
-
-          <Row gutter={[16, 0]}>
-            <Col xs={12}>
-              <Form.Item
-                  label="Source"
-                  name="source"
-                  rules={[{ required: true, message: "Please select Source" }]}
-              >
-                <SelectDropdown
-                    options={sourceOptions}
-                    placeHolder={"Select Source"}
-                />
-              </Form.Item>
-            </Col>
-
-            <Col xs={12}>
-              <Form.Item
-                  label="Incoming Date & Time"
-                  name="incoming_time"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select Incoming Date & Time",
-                    },
-                  ]}
-              >
-                <DatePicker
-                    size="large"
-                    showTime={{
-                      defaultValue: dayjs(
-                          `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`,
-                          "HH:mm:ss"
-                      ),
-                    }}
-                    placeholder="Click to select a date"
-                    format="YYYY-MM-DD HH:mm:ss"
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={[16, 0]}>
-            <Col xs={12}>
-              <Form.Item
-                  label="Status"
-                  name="status"
-                  rules={[{ required: true, message: "Please select Status" }]}
-              >
-                <SelectDropdown
-                    isBadgeStatus
-                    backgroundStatus={selectedClassStatus}
-                    options={statusOptions}
-                    placeHolder={"Select Status"}
-                />
-              </Form.Item>
-            </Col>
-
-            <Col xs={12}>
-              <Form.Item
-                  label="Urgency"
-                  name="urgency"
-                  rules={[{ required: true, message: "Please select Urgency" }]}
-              >
-                <SelectDropdown
-                    isBadgeStatus
-                    backgroundStatus={selectedClassUrgency}
-                    options={urgencyOptions}
-                    placeHolder={"Select Urgency"}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={[16, 0]}>
-            <Col xs={12}>
-              <Form.Item
-                  label="Assigned to Team"
-                  name="assigned_team"
-                  rules={[{ required: true, message: "Please select Team" }]}
-              >
-                <SelectDropdown
-                    options={
-                      !isEmpty(teamList) && !isEmpty(teamList.currentElements)
-                          ? convertOptions(teamList.currentElements, "name", "id")
-                          : []
-                    }
-                    onChange={onTeamChange}
-                    placeHolder={"Select Team"}
-                />
-              </Form.Item>
-            </Col>
-
-            <Col xs={12}>
-              <Form.Item
-                  label="Assigned to Agent"
-                  rules={[{ required: false }]}
-                  name="agent"
-              >
-                <AutoComplete
-                    allowClear
-                    dataSource={
-                      !isEmpty(userOptions) && !isEmpty(userOptions[0].users)
-                          ? convertOptions(userOptions[0].users, "name")
-                          : []
-                    }
-                    disabled={!isTeamSelected}
-                    onSelect={handleSetAgent}
-                    placeholder={"Select Agent"}
-                    filterOption={(inputValue, option) => {
-                      return (
-                          option.value
-                              .toUpperCase()
-                              .indexOf(inputValue.toUpperCase()) !== -1
-                      );
-                    }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-              className="d-none"
-              label="Due Date"
-              name="due_date"
-              rules={[{ required: true, message: "Please select Due Date" }]}
-          >
-            <DatePicker
-                size="large"
-                showTime
-                placeholder="Click to select a date"
-            />
-          </Form.Item>
-
-          <div className="patient-detail">
-            <div className="color-text-primary text-base fw-medium mt-15 mb-40">
-              Patient Details
-            </div>
-
-            <div style={{ position: "relative" }}>
-              <Form.Item
-                  label="Phone Number"
-                  name="phone_number"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please insert Phone Number",
-                    },
-                  ]}
-              >
-                <Input
-                    size="large"
-                    type="text"
-                    placeholder={"Insert Phone Number"}
-                    onChange={(e) => setSearchPhoneNumber(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (!/[0-9]/.test(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                />
-              </Form.Item>
-              <Button
-                  type="default"
-                  primary
-                  className="btn__custom-search-patient"
-                  disabled={isDisabledPatient.split("").length <= 0}
-                  onClick={handlePatientDetailList}
-              >
-                {isLoadingPatient ? <Spin /> : "Search Patient"}
-              </Button>
-            </div>
-
-            {errMessagePatient !== "" ? (
-                <span style={{ color: "rgb(220 38 38)" }}>{errMessagePatient}</span>
-            ) : null}
-
-            {patientList.length > 0 && (
-                <Table
-                    columns={columns}
-                    dataSource={patientList}
-                    pagination={false}
-                    className="mb-20"
-                />
-            )}
-
-            <Form.Item
-                label="Patient Name"
-                name="patient_name"
-                rules={[{ required: true, message: "Please insert Patient Name" }]}
-            >
-              <Input size="large" placeholder={"Insert Patient Name"} />
-            </Form.Item>
-
-            <Form.Item
-                label="Medical Record"
-                name="medical_record"
-                rules={[
-                  { required: true, message: "Please insert Medical Record" },
-                ]}
-            >
-              <Input size="large" placeholder={"Insert Medical Record"} />
-            </Form.Item>
-
-            <Form.Item
-                label="Patient ID"
-                name="patient_id"
-                rules={[{ required: true, message: "Please insert Patient ID" }]}
-            >
-              <Input size="large" placeholder={"Insert Patient ID"} />
-            </Form.Item>
-            <Form.Item
-                label="SO Number"
-                name="so_number"
-                rules={[{ required: true, message: "Please insert SO Number" }]}
-            >
-              <AutoComplete
-                  style={{ marginBottom: "10px" }}
-                  allowClear
-                  options={
-                    !isEmpty(patientSoNumbers) && !isEmpty(patientSoNumbers)
-                        ? convertOptions(patientSoNumbers, "soNumber")
-                        : []
-                  }
-                  placeholder="Select SO Number"
-                  value={patientSoNumbers.length === 0 && ""}
-                  defaultValue={patientSoNumbers.length === 0 && ""}
-                  filterOption={(inputValue, option) => {
-                    return (
-                        option.value
-                            .toUpperCase()
-                            .indexOf(inputValue.toUpperCase()) !== -1
-                    );
+          }}
+          loading={isLoadingButton}
+        >
+          Save
+        </Button>,
+      ]}
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        onValuesChange={handleFormValuesChange}
+        id={"add-modal-all-tickets"}
+        onFinish={handleSubmitAddData}
+      >
+        <Form.Item
+          label="Title"
+          name="title"
+          rules={[{ required: true, message: "Please insert Title" }]}
+        >
+          <Input
+            size="large"
+            placeholder="Insert Title"
+            onChange={(e) => {
+              setTitle(e.target.value);
+              form.setFieldValue("title", e.target.value);
+            }}
+          />
+        </Form.Item>
+        <div
+          style={{
+            width: "100%",
+            overflowWrap: "break-word",
+          }}
+        >
+          {getTicketRecommendation.data.length !== 0 && title.length !== 0
+            ? getTicketRecommendation.data.map((item) => (
+                <Link
+                  key={item.number}
+                  to={`/edit-ticket/edit?id=${item.number}`}
+                  style={{
+                    textDecoration: "underline",
+                    color: "blue",
+                    whiteSpace: "nowrap",
+                    marginRight: "5px",
+                    marginLeft: "5px",
                   }}
+                  target="#"
+                >
+                  {item.title}
+                </Link>
+              ))
+            : null}
+        </div>
+        <Form.Item
+          label="Infobip Chat ID"
+          name="infobipChatId"
+          rules={[{ required: false }]}
+        >
+          <Input size="large" placeholder="Insert Infobip Chat ID" />
+        </Form.Item>
+
+        <div className="mb-20">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0px 7px",
+              marginBottom: "5px",
+            }}
+          >
+            <span style={{ color: "red" }}>*</span>
+            <label htmlFor="Description">Description</label>
+          </div>
+          <EditorJodit
+            isCreateTicket={true}
+            config={config}
+            value={description}
+            setValue={setDescription}
+          />
+          {dataDescription.status && (
+            <div className="ant-form-item-explain-error mb-10">
+              {dataDescription.message}
+            </div>
+          )}
+        </div>
+
+        <Row gutter={[16, 0]}>
+          <Col xs={8}>
+            <Form.Item
+              label="Business Unit"
+              name="businessUnit"
+              rules={[
+                { required: true, message: "Please select Business Unit" },
+              ]}
+            >
+              <Select
+                className="mb-10"
+                showSearch
+                filterOption={(input, option) => {
+                  return (
+                    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  );
+                }}
+                options={
+                  !isEmpty(getBusiness.data)
+                    ? convertOptions(getBusiness.data, "name", "name")
+                    : []
+                }
+                placeholder={"Select Business Unit"}
+                onChange={handleBusinessUnitChange}
               />
             </Form.Item>
+          </Col>
+          <Col xs={8}>
+            <Form.Item
+              label="Clinic Location"
+              name="clinicName"
+              rules={[
+                { required: false, message: "Please Select Clinic Location" },
+              ]}
+            >
+              <Select
+                showSearch
+                filterOption={(input, option) => {
+                  return (
+                    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  );
+                }}
+                options={
+                  !isEmpty(getClinicLocation.data)
+                    ? convertOptions(
+                        getClinicLocation.data.currentElements,
+                        "clinicName",
+                        "clinicName"
+                      )
+                    : []
+                }
+                placeholder={"Select Clinic Location"}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 0]}>
+          <Col xs={8}>
+            <Form.Item
+              label="Category"
+              name="category"
+              rules={[{ required: true, message: "Please select Category" }]}
+            >
+              <Select
+                className="mb-10"
+                showSearch
+                filterOption={(input, option) => {
+                  return (
+                    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  );
+                }}
+                options={
+                  !isEmpty(categoryByBusiness?.data)
+                    ? convertOptions(categoryByBusiness?.data, "name", "id")
+                    : []
+                }
+                placeholder={"Select Category"}
+                onChange={handleCategory}
+                disabled={
+                  categoryByBusiness.status === "LOADING" ||
+                  form.getFieldValue("businessUnit") === ""
+                }
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={8}>
+            <Form.Item
+              label="Sub Category 1"
+              name="sub_category_1"
+              rules={[
+                { required: true, message: "Please select Sub Category 1" },
+              ]}
+            >
+              <Select
+                className="mb-10"
+                showSearch
+                filterOption={(input, option) => {
+                  return (
+                    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  );
+                }}
+                disabled={isCategorySelected ? false : true}
+                options={
+                  !isEmpty(subCategory1Array)
+                    ? convertOptions(subCategory1Array, "name", "id")
+                    : []
+                }
+                placeholder={"Select Sub Category 1"}
+                onChange={handleSubCat1}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={8}>
+            <Form.Item
+              label="Sub Category 2"
+              name="sub_category_2"
+              rules={[
+                { required: true, message: "Please select Sub Category 2" },
+              ]}
+            >
+              <Select
+                className="mb-10"
+                showSearch
+                filterOption={(input, option) => {
+                  return (
+                    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  );
+                }}
+                disabled={isSubCategory1Selected ? false : true}
+                options={
+                  !isEmpty(subCategory2Array)
+                    ? convertOptions(subCategory2Array, "name", "id")
+                    : []
+                }
+                placeholder={"Select Sub Category 2"}
+                onChange={handleRahang}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        {isRahangSetActive && (
+          <Col xs={24}>
+            <Row>
+              <Col xs={24}>
+                <div className="rahang-set">
+                  <p>Set Bermasalah</p>
+
+                  <div className="rahang-set-value">
+                    <div
+                      className="icon-container icon-container--left left-nav-homepage"
+                      onClick={() => previous("rahang_atas")}
+                    >
+                      <img
+                        style={{
+                          position: "absolute",
+                          top: "0px",
+                          left: "0px",
+                        }}
+                        src={`https://rata-web-production-assets.s3.ap-southeast-1.amazonaws.com/icons/chevron-right-plain.svg`}
+                        alt="left"
+                      />
+                    </div>
+
+                    <Row>
+                      <Col xs={3}>
+                        <p className="mb-10">Rahang Atas</p>
+                      </Col>
+
+                      <Col xs={24}>
+                        <Form.Item name="ra">
+                          <Checkbox.Group
+                            style={{ width: "95%", margin: "0px auto" }}
+                          >
+                            <Carousel
+                              {...settings}
+                              ref={(node) => (refRahangAtasContainer = node)}
+                            >
+                              {plainOptions.map((item, key) => (
+                                <Row key={key}>
+                                  <Col span={7}>
+                                    <Checkbox value={item}>{item}</Checkbox>
+                                  </Col>
+                                </Row>
+                              ))}
+                            </Carousel>
+                          </Checkbox.Group>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+
+                    <div
+                      className="icon-container icon-container--right right-nav-homepage"
+                      onClick={() => next("rahang_atas")}
+                    >
+                      <img
+                        style={{
+                          position: "absolute",
+                          top: "0px",
+                          left: "0px",
+                        }}
+                        src={`https://rata-web-production-assets.s3.ap-southeast-1.amazonaws.com/icons/chevron-right-plain.svg`}
+                        alt="right"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="rahang-set-value mt-4">
+                    <div
+                      className="icon-container icon-container--left left-nav-homepage"
+                      onClick={() => previous("rahang_bawah")}
+                    >
+                      <img
+                        style={{
+                          position: "absolute",
+                          top: "0px",
+                          left: "0px",
+                        }}
+                        src={`https://rata-web-production-assets.s3.ap-southeast-1.amazonaws.com/icons/chevron-right-plain.svg`}
+                        alt="left"
+                      />
+                    </div>
+
+                    <Row>
+                      <Col xs={6}>
+                        <p className="mb-10">Rahang Bawah</p>
+                      </Col>
+
+                      <Col xs={24}>
+                        <Form.Item name="rb">
+                          <Checkbox.Group
+                            style={{ width: "95%", margin: "0px auto" }}
+                          >
+                            <Carousel
+                              {...settings}
+                              ref={(node) => (refRahangBawahContainer = node)}
+                            >
+                              {plainOptions.map((item, key) => (
+                                <Row key={key}>
+                                  <Col span={7}>
+                                    <Checkbox value={item}>{item}</Checkbox>
+                                  </Col>
+                                </Row>
+                              ))}
+                            </Carousel>
+                          </Checkbox.Group>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+
+                    <div
+                      className="icon-container icon-container--right right-nav-homepage"
+                      onClick={() => next("rahang_bawah")}
+                    >
+                      <img
+                        style={{
+                          position: "absolute",
+                          top: "0px",
+                          left: "0px",
+                        }}
+                        src={`https://rata-web-production-assets.s3.ap-southeast-1.amazonaws.com/icons/chevron-right-plain.svg`}
+                        alt="right"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </Col>
+        )}
+
+        <Row gutter={[16, 0]}>
+          <Col xs={12}>
+            <Form.Item
+              label="Source"
+              name="source"
+              rules={[{ required: true, message: "Please select Source" }]}
+            >
+              <SelectDropdown
+                options={sourceOptions}
+                placeHolder={"Select Source"}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={12}>
+            <Form.Item
+              label="Incoming Date & Time"
+              name="incoming_time"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select Incoming Date & Time",
+                },
+              ]}
+            >
+              <DatePicker
+                size="large"
+                showTime={{
+                  defaultValue: dayjs(
+                    `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`,
+                    "HH:mm:ss"
+                  ),
+                }}
+                placeholder="Click to select a date"
+                format="YYYY-MM-DD HH:mm:ss"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={[16, 0]}>
+          <Col xs={12}>
+            <Form.Item
+              label="Status"
+              name="status"
+              rules={[{ required: true, message: "Please select Status" }]}
+            >
+              <SelectDropdown
+                isBadgeStatus
+                backgroundStatus={selectedClassStatus}
+                options={statusOptions}
+                placeHolder={"Select Status"}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={12}>
+            <Form.Item
+              label="Urgency"
+              name="urgency"
+              rules={[{ required: true, message: "Please select Urgency" }]}
+            >
+              <SelectDropdown
+                isBadgeStatus
+                backgroundStatus={selectedClassUrgency}
+                options={urgencyOptions}
+                placeHolder={"Select Urgency"}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={[16, 0]}>
+          <Col xs={12}>
+            <Form.Item
+              label="Assigned to Team"
+              name="assigned_team"
+              rules={[{ required: true, message: "Please select Team" }]}
+            >
+              <SelectDropdown
+                options={
+                  !isEmpty(teamList) && !isEmpty(teamList.currentElements)
+                    ? convertOptions(teamList.currentElements, "name", "id")
+                    : []
+                }
+                onChange={onTeamChange}
+                placeHolder={"Select Team"}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={12}>
+            <Form.Item
+              label="Assigned to Agent"
+              rules={[{ required: false }]}
+              name="agent"
+            >
+              <AutoComplete
+                allowClear
+                dataSource={
+                  !isEmpty(userOptions) && !isEmpty(userOptions[0].users)
+                    ? convertOptions(userOptions[0].users, "name")
+                    : []
+                }
+                disabled={!isTeamSelected}
+                onSelect={handleSetAgent}
+                placeholder={"Select Agent"}
+                filterOption={(inputValue, option) => {
+                  return (
+                    option.value
+                      .toUpperCase()
+                      .indexOf(inputValue.toUpperCase()) !== -1
+                  );
+                }}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Form.Item
+          className="d-none"
+          label="Due Date"
+          name="due_date"
+          rules={[{ required: true, message: "Please select Due Date" }]}
+        >
+          <DatePicker
+            size="large"
+            showTime
+            placeholder="Click to select a date"
+          />
+        </Form.Item>
+
+        <div className="patient-detail">
+          <div className="color-text-primary text-base fw-medium mt-15 mb-40">
+            Patient Details
           </div>
-        </Form>
-      </Modal>
+
+          <div style={{ position: "relative" }}>
+            <Form.Item
+              label="Phone Number"
+              name="phone_number"
+              rules={[
+                {
+                  required: true,
+                  message: "Please insert Phone Number",
+                },
+              ]}
+            >
+              <Input
+                size="large"
+                type="text"
+                placeholder={"Insert Phone Number"}
+                onChange={(e) => setSearchPhoneNumber(e.target.value)}
+                onKeyPress={(e) => {
+                  if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+              />
+            </Form.Item>
+            <Button
+              type="default"
+              primary
+              className="btn__custom-search-patient"
+              disabled={isDisabledPatient.split("").length <= 0}
+              onClick={handlePatientDetailList}
+            >
+              {isLoadingPatient ? <Spin /> : "Search Patient"}
+            </Button>
+          </div>
+
+          {errMessagePatient !== "" ? (
+            <span style={{ color: "rgb(220 38 38)" }}>{errMessagePatient}</span>
+          ) : null}
+
+          {patientList.length > 0 && (
+            <Table
+              columns={columns}
+              dataSource={patientList}
+              pagination={false}
+              className="mb-20"
+            />
+          )}
+
+          <Form.Item
+            label="Patient Name"
+            name="patient_name"
+            rules={[{ required: true, message: "Please insert Patient Name" }]}
+          >
+            <Input size="large" placeholder={"Insert Patient Name"} />
+          </Form.Item>
+
+          <Form.Item
+            label="Medical Record"
+            name="medical_record"
+            rules={[
+              { required: true, message: "Please insert Medical Record" },
+            ]}
+          >
+            <Input size="large" placeholder={"Insert Medical Record"} />
+          </Form.Item>
+
+          <Form.Item
+            label="Patient ID"
+            name="patient_id"
+            rules={[{ required: true, message: "Please insert Patient ID" }]}
+          >
+            <Input size="large" placeholder={"Insert Patient ID"} />
+          </Form.Item>
+          <Form.Item
+            label="SO Number"
+            name="so_number"
+            rules={[{ required: true, message: "Please insert SO Number" }]}
+          >
+            <AutoComplete
+              style={{ marginBottom: "10px" }}
+              allowClear
+              options={
+                !isEmpty(patientSoNumbers) && !isEmpty(patientSoNumbers)
+                  ? convertOptions(patientSoNumbers, "soNumber")
+                  : []
+              }
+              placeholder="Select SO Number"
+              value={patientSoNumbers.length === 0 && ""}
+              defaultValue={patientSoNumbers.length === 0 && ""}
+              filterOption={(inputValue, option) => {
+                return (
+                  option.value
+                    .toUpperCase()
+                    .indexOf(inputValue.toUpperCase()) !== -1
+                );
+              }}
+            />
+          </Form.Item>
+        </div>
+      </Form>
+    </Modal>
   );
 };
 
 const mapStateToProps = ({
-                           teamList,
-                           ticketList,
-                           categoryList,
-                           patientDetailList,
-                         }) => ({
+  teamList,
+  ticketList,
+  categoryList,
+  patientDetailList,
+}) => ({
   teamList,
   ticketList,
   categoryList,
@@ -1233,5 +1257,5 @@ export default connect(mapStateToProps, {
   getTicketList,
   getCategoryList,
   getPatientDetailList,
-  getCategoryByBusiness
+  getCategoryByBusiness,
 })(ModalAddData);

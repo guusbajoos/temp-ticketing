@@ -178,7 +178,7 @@ export function TicketList({
       if (isTicketStatus.status && isTicketStatus.condition) {
         const data = await fetchDataAllTicketStatus(
           isTicketStatus.status,
-          activeFilterListV3,
+          activeFilterListV3
         );
         const updatedTickets = {
           open: [],
@@ -986,14 +986,17 @@ export function TicketList({
   const onBusinesChange = async (checkedValues) => {
     setActiveFilterV3({
       ...activeFilterV3,
-      businessUnit: checkedValues.toUpperCase() === "TANAM GIGI" ? "TANAM" : checkedValues.toUpperCase()
+      businessUnit:
+        checkedValues.toUpperCase() === "TANAM GIGI"
+          ? "TANAM"
+          : checkedValues.toUpperCase(),
     });
   };
 
   const onClinicNameChange = async (checkedValues) => {
     setActiveFilterV3({
       ...activeFilterV3,
-      clinicName: checkedValues
+      clinicName: checkedValues,
     });
   };
 

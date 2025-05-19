@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import {
-  CloseOutlined, DeleteTwoTone, EditTwoTone,
+  CloseOutlined,
+  DeleteTwoTone,
+  EditTwoTone,
   FilterOutlined,
   PlusOutlined,
   SearchOutlined,
@@ -25,17 +27,15 @@ import {
 import { Content } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
 import { useTicketCategories } from "./hooks";
-import {
-  DEFAULT_VALUE_FORM,
-  radioChoice,
-} from "./constants";
+import { DEFAULT_VALUE_FORM, radioChoice } from "./constants";
 import { isEmpty } from "lodash";
 import "../../components/Table/styles/index.scss";
-import {convertOptions, queryStringify, wordsCapitalize} from "utils/index";
+import { convertOptions, queryStringify, wordsCapitalize } from "utils/index";
 import { connect } from "react-redux";
 import { getCategoryList } from "store/action/CategoryAction";
 import ticketCategoryApi from "api/ticket-categories";
 import { useBusiness } from "pages/ticket/TicketLists/component/Filter/hooks";
+import Filter from "./Filter";
 
 export function CategoriesList({ getCategoryList }) {
   const [form] = Form.useForm();
@@ -73,6 +73,16 @@ export function CategoriesList({ getCategoryList }) {
   const [isLoading, setIsLoading] = useState(false);
   const [currentName, setCurrentName] = useState("");
   const [jawsValidation, setJawsValidation] = useState(false);
+  const [activeFilter, setActiveFilter] = useState({
+    businessUnit: null,
+    category: null,
+    subCategory1: null,
+    subCategory2: null,
+  });
+  const [sortTable, setSortTable] = useState({
+    by: "",
+    direction: "",
+  });
 
   const handleOnClose = () => {
     setFormValues({
@@ -134,7 +144,7 @@ export function CategoriesList({ getCategoryList }) {
           level: formValues.level,
           businessUnit: formValues.businessUnit,
           parent: categoriesIds.subCategory1,
-          jawsMandatory: jawsValidation
+          jawsMandatory: jawsValidation,
         };
       }
     });
@@ -177,8 +187,17 @@ export function CategoriesList({ getCategoryList }) {
       keyword: state.search,
       page: state.currentPage,
       size: state.perPage,
+      ...activeFilter,
+      sort: sortTable.by ? `${sortTable.by},${sortTable.direction}` : "",
     });
-  }, [state.search, state.currentPage, state.perPage, isAddDataModalOpen]);
+  }, [
+    state.search,
+    state.currentPage,
+    state.perPage,
+    isAddDataModalOpen,
+    activeFilter,
+    sortTable,
+  ]);
 
   useEffect(() => {
     if (getTicketCategories.status === "FAILED") {
@@ -203,88 +222,107 @@ export function CategoriesList({ getCategoryList }) {
   }, [getBusiness.status]);
 
   const handleFilterShow = () => {
-    setShowFilter(!showFilter)
-  }
+    setShowFilter(!showFilter);
+  };
 
   const handleDeleteConfirmationShow = (row) => {
-    const rowId = row.subsubcategory_id != null ? row.subsubcategory_id : row.subcategory_id != null ? row.subcategory_id : row.category_id;
-    const rowName = row.subsubcategory_id != null ? row.subsubcategory_name : row.subcategory_id != null ? row.subcategory_name : row.category_name;
-    console.log(row)
+    const rowId =
+      row.subsubcategory_id != null
+        ? row.subsubcategory_id
+        : row.subcategory_id != null
+          ? row.subcategory_id
+          : row.category_id;
+    const rowName =
+      row.subsubcategory_id != null
+        ? row.subsubcategory_name
+        : row.subcategory_id != null
+          ? row.subcategory_name
+          : row.category_name;
     setDeleteId(rowId);
     setCategoryName(rowName);
-    setShowDeleteConfirmation(!showDeleteConfirmation)
-  }
+    setShowDeleteConfirmation(!showDeleteConfirmation);
+  };
 
   const handleOnDeleteClose = () => {
-    console.log('close alert');
     setShowDeleteConfirmation(!showDeleteConfirmation);
   };
 
   const handleConfirmDelete = () => {
-    console.log('confirm alert');
     setShowDeleteConfirmation(!showDeleteConfirmation);
   };
 
   const handleEditConfirmationShow = (row) => {
-    const rowName = row.subsubcategory_id != null ? row.subsubcategory_name : row.subcategory_id != null ? row.subcategory_name : row.category_name;
-    const rowLevel = row.subsubcategory_id != null ? 2 : row.subcategory_id != null ? 1 : 0;
-    console.log('name = ',rowName);
-    console.log('level = ',rowLevel);
+    const rowName =
+      row.subsubcategory_id != null
+        ? row.subsubcategory_name
+        : row.subcategory_id != null
+          ? row.subcategory_name
+          : row.category_name;
+    const rowLevel =
+      row.subsubcategory_id != null ? 2 : row.subcategory_id != null ? 1 : 0;
     setCategoryLevel(rowLevel);
-    form.setFieldValue("existingName", rowName)
+    form.setFieldValue("existingName", rowName);
     // form.setFieldValue("currentName", "");;
     setIsEditDataModalOpen(!isEditDataModalOpen);
-  }
+  };
 
   const columnsTicketCategories = [
     {
       title: "Business Unit",
       dataIndex: "business_unit",
       render: (v) => wordsCapitalize(v) || "-",
-    },{
+      sorter: true,
+    },
+    {
       title: "Category Name",
       dataIndex: "category_name",
       render: (v) => wordsCapitalize(v) || "-",
+      sorter: true,
     },
     {
       title: "Sub Category 1",
       dataIndex: "subcategory_name",
       render: (v) => wordsCapitalize(v) || "-",
+      sorter: true,
     },
     {
       title: "Sub Category 2",
       dataIndex: "subsubcategory_name",
       render: (v) => wordsCapitalize(v) || "-",
-    },{
+      sorter: true,
+    },
+    {
       title: "Created Date",
       dataIndex: "created_date",
       render: (v) => wordsCapitalize(v) || "-",
     },
     {
-      title: 'Action',
+      title: "Action",
       render: (row) => (
-          <>
-            <Tooltip title="Edit Data">
-              <Button
-                  type="text"
-                  onClick={()=>handleEditConfirmationShow(row)}
-                  rel="noopener noreferrer"
-                  target="_blank">
-                <EditTwoTone twoToneColor="#0e07e6"/>
-              </Button>
-            </Tooltip>
-            <Tooltip title="Delete Data">
-              <Button
-                  type="text"
-                  onClick={()=>handleDeleteConfirmationShow(row)}
-                  rel="noopener noreferrer"
-                  target="_blank">
-                <DeleteTwoTone twoToneColor="#b50537"/>
-              </Button>
-            </Tooltip>
-          </>
+        <>
+          <Tooltip title="Edit Data">
+            <Button
+              type="text"
+              onClick={() => handleEditConfirmationShow(row)}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <EditTwoTone twoToneColor="#0e07e6" />
+            </Button>
+          </Tooltip>
+          <Tooltip title="Delete Data">
+            <Button
+              type="text"
+              onClick={() => handleDeleteConfirmationShow(row)}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <DeleteTwoTone twoToneColor="#b50537" />
+            </Button>
+          </Tooltip>
+        </>
       ),
-    }
+    },
   ];
 
   return (
@@ -354,9 +392,9 @@ export function CategoriesList({ getCategoryList }) {
             </Tooltip>
             <Tooltip title="Filter">
               <Button
-                  icon={<FilterOutlined />}
-                  className="mr-10"
-                  onClick={handleFilterShow}
+                icon={<FilterOutlined />}
+                className="mr-10"
+                onClick={handleFilterShow}
               />
             </Tooltip>
             <Tooltip title="Add Data">
@@ -377,6 +415,13 @@ export function CategoriesList({ getCategoryList }) {
               }
               pagination={false}
               loading={getTicketCategories.status === "LOADING"}
+              onChange={(_p, _f, pSorter) => {
+                const { field, order } = pSorter;
+                setSortTable({
+                  by: field,
+                  direction: order === "ascend" ? "ASC" : "DESC",
+                });
+              }}
             />
             <Row justify="end" style={{ padding: 16 }} align="middle">
               <Pagination
@@ -436,31 +481,33 @@ export function CategoriesList({ getCategoryList }) {
             </Radio.Group>
           </Form.Item>
 
-          {(formValues.level === 0) && (
-          <Form.Item
-            label="Business Unit"
-            name="businessUnit"
-            rules={[{ required: true, message: "Please select Business Unit" }]}
-          >
-            <Select
-              className="mb-10"
-              showSearch
-              filterOption={(input, option) => {
-                return (
-                  option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                );
-              }}
-              options={
-                !isEmpty(getBusiness.data)
-                  ? convertOptions(getBusiness.data, "name", "name")
-                  : []
-              }
-              placeholder={"Select Business Unit"}
-              onChange={(c) =>
-                setFormValues((x) => ({ ...x, businessUnit: c }))
-              }
-            />
-          </Form.Item>
+          {formValues.level === 0 && (
+            <Form.Item
+              label="Business Unit"
+              name="businessUnit"
+              rules={[
+                { required: true, message: "Please select Business Unit" },
+              ]}
+            >
+              <Select
+                className="mb-10"
+                showSearch
+                filterOption={(input, option) => {
+                  return (
+                    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  );
+                }}
+                options={
+                  !isEmpty(getBusiness.data)
+                    ? convertOptions(getBusiness.data, "name", "name")
+                    : []
+                }
+                placeholder={"Select Business Unit"}
+                onChange={(c) =>
+                  setFormValues((x) => ({ ...x, businessUnit: c }))
+                }
+              />
+            </Form.Item>
           )}
 
           {(formValues.level === 1 || formValues.level === 2) && (
@@ -591,76 +638,82 @@ export function CategoriesList({ getCategoryList }) {
             ))}
           </Row>
           <Row gutter={10}>
-            {(formValues.level === 2) && (
-                <Col xs={20}>
-                  <Checkbox
-                      value={jawsValidation}
-                      onClick={() => setJawsValidation(!jawsValidation)}
-                  >
-                    Add Rahang Information
-                  </Checkbox>
-                </Col>
+            {formValues.level === 2 && (
+              <Col xs={20}>
+                <Checkbox
+                  value={jawsValidation}
+                  onClick={() => setJawsValidation(!jawsValidation)}
+                >
+                  Add Rahang Information
+                </Checkbox>
+              </Col>
             )}
           </Row>
         </Form>
       </Modal>
 
       <Modal
-          visible={showDeleteConfirmation}
-          footer={undefined}
-          destroyOnClose
-          title="Delete Confirmation"
-          onCancel={() => handleOnDeleteClose()}
-          onOk={() => handleConfirmDelete()}
+        visible={showDeleteConfirmation}
+        footer={undefined}
+        destroyOnClose
+        title="Delete Confirmation"
+        onCancel={() => handleOnDeleteClose()}
+        onOk={() => handleConfirmDelete()}
       >
-        <h3>Are you sure you want to delete this category : {categoryName}? </h3>
+        <h3>
+          Are you sure you want to delete this category : {categoryName}?{" "}
+        </h3>
       </Modal>
 
       <Modal
-          forceRender
-          destroyOnClose
-          title="Edit Category"
-          visible={isEditDataModalOpen}
-          // onOk={() => onSubmit()}
-          onCancel={() => handleOnEditClose()}
-          footer={[
-            <Button
-                size="large"
-                key="back"
-                onClick={() => handleOnEditClose()}
-                loading={isLoading}
-            >
-              Cancel
-            </Button>,
-            <Button
-                size="large"
-                key="submit"
-                htmlType="submit"
-                type="primary"
-                form="editCategoriesForm"
-                loading={isLoading}
-            >
-              Submit
-            </Button>,
-          ]}
+        forceRender
+        destroyOnClose
+        title="Edit Category"
+        visible={isEditDataModalOpen}
+        // onOk={() => onSubmit()}
+        onCancel={() => handleOnEditClose()}
+        footer={[
+          <Button
+            size="large"
+            key="back"
+            onClick={() => handleOnEditClose()}
+            loading={isLoading}
+          >
+            Cancel
+          </Button>,
+          <Button
+            size="large"
+            key="submit"
+            htmlType="submit"
+            type="primary"
+            form="editCategoriesForm"
+            loading={isLoading}
+          >
+            Submit
+          </Button>,
+        ]}
       >
         <Form onFinish={() => onSubmit()} form={form} id="editCategoriesForm">
           <Row gutter={5}>
             <Col xs={20}>
               <Form.Item
-                  label={categoryLevel == 0 ? "Category Name" : categoryLevel == 1 ? "Sub Category 1 Name" : "Sub Category 2 Name"}
-                  name="existingName"
-                  validateTrigger="onBlur"
+                label={
+                  categoryLevel == 0
+                    ? "Category Name"
+                    : categoryLevel == 1
+                      ? "Sub Category 1 Name"
+                      : "Sub Category 2 Name"
+                }
+                name="existingName"
+                validateTrigger="onBlur"
               >
-                <Input
-                    size="large"
-                />
+                <Input size="large" />
               </Form.Item>
             </Col>
           </Row>
         </Form>
       </Modal>
-
+      <Filter show={showFilter} setActiveFilter={(v) => setActiveFilter(v)} />
     </>
   );
 }
