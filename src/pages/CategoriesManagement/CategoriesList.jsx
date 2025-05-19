@@ -245,25 +245,103 @@ export function CategoriesList({ getCategoryList }) {
 
   const handleOnDeleteClose = () => {
     setShowDeleteConfirmation(!showDeleteConfirmation);
+    setDeleteId(0);
   };
 
-  const handleConfirmDelete = () => {
-    setShowDeleteConfirmation(!showDeleteConfirmation);
+  const handleOnDeleteConfirm = async () => {
+    setIsLoading(true);
+    try {
+      const response = await ticketCategoryApi.deleteCategory(deleteId);
+      if (response.status == 200) {
+        message.success("Delete Data Success");
+        setDeleteId(0);
+        setShowDeleteConfirmation(!showDeleteConfirmation);
+        getTicketCategoriesList({
+          keyword: state.search,
+          page: state.currentPage,
+          size: state.perPage,
+          ...activeFilter,
+          sort: sortTable.by ? `${sortTable.by},${sortTable.direction}` : "",
+        });
+      } else {
+        message.error("Delete Data Failed");
+      }
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      message.error(errMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleEditConfirmationShow = (row) => {
-    const rowName =
-      row.subsubcategory_id != null
-        ? row.subsubcategory_name
-        : row.subcategory_id != null
-          ? row.subcategory_name
-          : row.category_name;
-    const rowLevel =
-      row.subsubcategory_id != null ? 2 : row.subcategory_id != null ? 1 : 0;
-    setCategoryLevel(rowLevel);
-    form.setFieldValue("existingName", rowName);
-    // form.setFieldValue("currentName", "");;
     setIsEditDataModalOpen(!isEditDataModalOpen);
+
+    const level = row.subsubcategory_id ? 2 : row.subcategory_id ? 1 : 0;
+    setCategoryLevel(level);
+
+    form.setFieldValue("category_id", row.category_id);
+    form.setFieldValue("category_name", row.category_name);
+    form.setFieldValue("subcategory_id", row.subcategory_id);
+    form.setFieldValue("subcategory_name", row.subcategory_name);
+    form.setFieldValue("subsubcategory_id", row.subsubcategory_id);
+    form.setFieldValue("subsubcategory_name", row.subsubcategory_name);
+  };
+
+  // Set form field value to form instance on field change
+  const handleOnValuesChange = (changedValues) => {
+    const fieldName = Object.keys(changedValues)[0];
+    const value = changedValues[fieldName];
+
+    form.setFieldValue(fieldName, value);
+  };
+
+  const handleOk = async (values) => {
+    setIsLoading(true);
+
+    try {
+      // Construct your payload based on the form values
+      const payload = {
+        // Determine which ID to use based on the data
+        id:
+          form.getFieldValue("subsubcategory_id") ||
+          form.getFieldValue("subcategory_id") ||
+          form.getFieldValue("category_id"),
+        name:
+          values.subsubcategory_name ||
+          values.subcategory_name ||
+          values.category_name,
+        // Add any other needed fields
+      };
+
+      console.log("Edit payload:", payload);
+
+      // console.log("Submitting edit with payload:", payload);
+
+      // const response = await ticketCategoryApi.editCategory(payload);
+
+      // if (response.status === 200) {
+      //   message.success("The category has been successfully updated");
+      //   handleOnEditClose();
+      //   // Refresh the data
+      //   getTicketCategoriesList({
+      //     keyword: state.search,
+      //     page: state.currentPage,
+      //     size: state.perPage,
+      //     ...activeFilter,
+      //     sort: sortTable.by ? `${sortTable.by},${sortTable.direction}` : "",
+      //   });
+      // } else {
+      //   message.error("Update failed");
+      // }
+    } catch (error) {
+      console.error("Edit category error:", error);
+      message.error(
+        error.response?.data?.message || "Failed to update category"
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const columnsTicketCategories = [
@@ -658,7 +736,7 @@ export function CategoriesList({ getCategoryList }) {
         destroyOnClose
         title="Delete Confirmation"
         onCancel={() => handleOnDeleteClose()}
-        onOk={() => handleConfirmDelete()}
+        onOk={() => handleOnDeleteConfirm()}
       >
         <h3>
           Are you sure you want to delete this category : {categoryName}?{" "}
@@ -667,10 +745,8 @@ export function CategoriesList({ getCategoryList }) {
 
       <Modal
         forceRender
-        destroyOnClose
         title="Edit Category"
-        visible={isEditDataModalOpen}
-        // onOk={() => onSubmit()}
+        open={isEditDataModalOpen}
         onCancel={() => handleOnEditClose()}
         footer={[
           <Button
@@ -686,14 +762,19 @@ export function CategoriesList({ getCategoryList }) {
             key="submit"
             htmlType="submit"
             type="primary"
-            form="editCategoriesForm"
+            form="edit-categories-form"
             loading={isLoading}
           >
             Submit
           </Button>,
         ]}
       >
-        <Form onFinish={() => onSubmit()} form={form} id="editCategoriesForm">
+        <Form
+          onFinish={() => form.submit()}
+          onValuesChange={handleOnValuesChange}
+          form={form}
+          id="edit-categories-form"
+        >
           <Row gutter={5}>
             <Col xs={20}>
               <Form.Item
@@ -704,12 +785,34 @@ export function CategoriesList({ getCategoryList }) {
                       ? "Sub Category 1 Name"
                       : "Sub Category 2 Name"
                 }
-                name="existingName"
+                name="category_name"
                 validateTrigger="onBlur"
               >
                 <Input size="large" />
               </Form.Item>
             </Col>
+            {form.getFieldValue("subcategory_id") && (
+              <Col xs={20}>
+                <Form.Item
+                  label="Sub Category 1"
+                  name="subcategory_name"
+                  validateTrigger="onBlur"
+                >
+                  <Input size="large" />
+                </Form.Item>
+              </Col>
+            )}
+            {form.getFieldValue("subsubcategory_id") && (
+              <Col xs={20}>
+                <Form.Item
+                  label="Sub Category 2"
+                  name="subsubcategory_name"
+                  validateTrigger="onBlur"
+                >
+                  <Input size="large" />
+                </Form.Item>
+              </Col>
+            )}
           </Row>
         </Form>
       </Modal>
