@@ -35,7 +35,7 @@ import { PageSpinner } from "components/PageSpinner";
 import { getTicketByNumber } from "store/action/TicketAction";
 import { getTeamList } from "store/action/TeamAction";
 import { getUserById } from "store/action/UserAction";
-import { getCategoryList } from "store/action/CategoryAction";
+import { getCategoryByBusiness } from "store/action/CategoryAction";
 // import { AuthenticationContext } from 'contexts/Authentication'
 import TicketApi from "api/ticket";
 import JawsApi from "api/jaws";
@@ -62,20 +62,20 @@ import { config } from "./config";
 import dayjs from "dayjs";
 import { useBusiness, useClinicLocation } from "./hooks";
 import api from "api/index";
+import { useSelector } from "react-redux";
 const { TextArea } = Input;
 const { confirm } = Modal;
 
 const plainOptions = [...Array(80)].map((_, i) => String(i));
 
 export function EditInfoDetail({
+  getCategoryByBusiness,
   getTeamList,
   getTicketByNumber,
   teamList,
   ticketByNumber,
-  getCategoryList,
-  categoryList,
-
   userById,
+  categoryList,
 }) {
   const editor = useRef(null);
   const navigate = useNavigate();
@@ -91,6 +91,8 @@ export function EditInfoDetail({
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [isTeamSelected, setIsTeamSelected] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState("");
+  const [category, setCategory] = useState(false);
+  const [subCategory1, setSubCategory1] = useState(false);
   const [isRahangSetActive, setIsRahangSetActive] = useState(true);
   const [selectedClassUrgency, setSelectedClassUrgency] = useState("");
   const [form] = Form.useForm();
@@ -161,46 +163,98 @@ export function EditInfoDetail({
     }
   };
 
-  async function getCategoryListData() {
-    try {
-      await getCategoryList(
-        queryStringify({
-          page: 1,
-          size: Number.MAX_SAFE_INTEGER,
-          level: 0,
-          sort: "name,ASC",
-        })
-      );
-    } catch (err) {
-      if (err.response) {
-        if (err.response.status === 401) {
-          // handleRefreshToken();
-        } else {
-          const errMessage = err.response.data.message;
-          message.error(errMessage);
-        }
-      } else {
-        // message.error('Tidak dapat menghubungi server, cek koneksi')
-        // localStorage.clear()
-        // sessionStorage.clear()
-        // window.location.reload()
-        // window.location.href = '/'
-      }
+  const { getBusinessList, business, resetStatus } = useBusiness();
+
+  const { getBusiness } = business;
+
+  const categoryByBusiness = useSelector(
+    (state) => state["categoryByBusiness"]
+  );
+
+  const handleBusinessUnitChange = async (value) => {
+    await getCategoryByBusiness({ unit: value });
+    form.setFieldsValue({
+      category: undefined,
+      sub_category_1: undefined,
+      sub_category_2: undefined,
+    });
+    setIsCategorySelected(false);
+    setIsSubCategory1Selected(false);
+  };
+
+  const handleCategory = (val) => {
+    // const find = categoryList?.find((item) => item.id === Number(val));
+    setIsRahangSetActive(false);
+    setCategory(val);
+    setIsCategorySelected(true);
+    form.setFieldsValue({
+      sub_category_1: undefined,
+      sub_category_2: undefined,
+    });
+    setIsSubCategory1Selected(false);
+  };
+
+  const handleSubCat1 = (val) => {
+    setIsRahangSetActive(false);
+    setSubCategory1(val);
+  };
+
+  const handleRahang = async (subCategory2) => {
+    setIsRahangSetActive(false);
+
+    const { data } = await JawsApi.validation(
+      category,
+      subCategory1,
+      subCategory2
+    );
+
+    if (data.mandatory) {
+      setIsRahangSetActive(true);
+    } else {
+      setIsRahangSetActive(false);
     }
-  }
+  };
+
+  const categorySelectedArray = filterSelectedCategory(
+    categoryByBusiness?.data,
+    selectedCategory,
+    null,
+    "category"
+  );
+
+  const CATEGORY_OPTIONS = categoryByBusiness?.data?.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
+
+  const subCategory1Array = !isEmpty(categorySelectedArray)
+    ? categorySelectedArray[0].subcategories
+    : [];
+
+  const SUB_CATEGORY_1_OPTIONS = subCategory1Array?.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
+
+  const subCategory1SelectedArray = filterSelectedCategory(
+    subCategory1Array,
+    selectedSubCategory1,
+    null,
+    "subCategory1"
+  );
+
+  const subCategory2Array = !isEmpty(subCategory1SelectedArray)
+    ? subCategory1SelectedArray[0].subcategories
+    : [];
+
+  const SUB_CATEGORY_2_OPTIONS = subCategory2Array?.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
 
   useEffect(() => {
-    getCategoryListData();
+    getBusinessList();
   }, []);
-
-  const { getBusinessList, business, resetStatus } =
-    useBusiness();
-
-  const {getBusiness} = business
-
-  useEffect(() => {
-    getBusinessList()
-  }, [])
 
   useEffect(() => {
     if (getBusiness.status === "FAILED") {
@@ -213,18 +267,21 @@ export function EditInfoDetail({
     }
   }, [getBusiness.status]);
 
-  const { getClinicLocationList, clinicLocation, resetStatus: resetStatusClinicLocation } =
-    useClinicLocation();
+  const {
+    getClinicLocationList,
+    clinicLocation,
+    resetStatus: resetStatusClinicLocation,
+  } = useClinicLocation();
 
-  const {getClinicLocation} = clinicLocation
+  const { getClinicLocation } = clinicLocation;
 
   useEffect(() => {
     getClinicLocationList({
       page: 1,
       size: Number.MAX_SAFE_INTEGER,
       sort: "clinicName,ASC",
-    })
-  }, [])
+    });
+  }, []);
 
   useEffect(() => {
     if (getClinicLocation.status === "FAILED") {
@@ -303,6 +360,11 @@ export function EditInfoDetail({
       const { category, subCategory1, subCategory2 } = ticketByNumber;
 
       validateRahang(category.id, subCategory1.id, subCategory2.id);
+      setIsCategorySelected(true);
+      setIsSubCategory1Selected(true);
+      setSelectedCategory(category.id);
+
+      getCategoryByBusiness({ unit: ticketByNumber.businessUnit });
     }
     setSelectedClassUrgency(ticketByNumber?.urgency);
   }, [ticketByNumber]);
@@ -315,35 +377,6 @@ export function EditInfoDetail({
   if (loadingPage) {
     return <PageSpinner />;
   }
-  const categorySelectedArray = filterSelectedCategory(
-    categoryList,
-    selectedCategory,
-    ticketByNumber,
-    "category"
-  );
-
-  const subCategory1Array = !isEmpty(categorySelectedArray)
-    ? categorySelectedArray[0].subcategories
-    : [];
-
-  const subCategory1Options = !isEmpty(subCategory1Array)
-    ? convertOptions(subCategory1Array, "name", "id")
-    : [];
-
-  const subCategory1SelectedArray = filterSelectedCategory(
-    subCategory1Array,
-    selectedSubCategory1,
-    ticketByNumber,
-    "subCategory1"
-  );
-
-  const subCategory2Array = !isEmpty(subCategory1SelectedArray)
-    ? subCategory1SelectedArray[0].subcategories
-    : [];
-
-  const subCategory2Options = !isEmpty(subCategory2Array)
-    ? convertOptions(subCategory2Array, "name", "id")
-    : [];
 
   const userTeamArray = filterSelectedTeamForSelectBox(
     teamList,
@@ -505,9 +538,13 @@ export function EditInfoDetail({
             ticketByNumber.patientSatisfactionStatus,
             values.ra,
             values.rb,
-            values.businessUnit.toUpperCase() === 'TANAM GIGI' ? "TANAM" : values.businessUnit.toUpperCase(),
+            values.businessUnit.toUpperCase() === "TANAM GIGI"
+              ? "TANAM"
+              : values.businessUnit.toUpperCase(),
             values.clinicName,
-            getClinicLocation.data.currentElements.find(el => el.clinicName === values.clinicName).idClinic
+            getClinicLocation.data.currentElements.find(
+              (el) => el.clinicName === values.clinicName
+            ).idClinic
           );
           navigate(-1);
           setCreateEditMessage(
@@ -640,22 +677,20 @@ export function EditInfoDetail({
                   ? ticketByNumber.number
                   : "",
                 infobipChatId: ticketByNumber.infobipChatId,
-                // team: initialSelectValueTeam(ticketByNumber),
-                // agent: initialSelectValueAgent(ticketByNumber),
                 status: ticketByNumber.status,
                 title: ticketByNumber.title,
                 description: ticketByNumber.description,
                 source: ticketByNumber.source,
                 urgency: ticketByNumber.urgency,
-                ...initialSelectValueCategory(ticketByNumber),
-                ...initialSelectValueSubCategory1(ticketByNumber),
-                // ...initialSelectValueSubCategory2(ticketByNumber),
-                sub_category_2:
-                  subCategory2Options.find(
-                    (item) =>
-                      item.value ==
-                      initialSelectValueSubCategory2(ticketByNumber).id
-                  ) ?? ticketByNumber.subCategory2.name,
+                category: categorySelectedArray?.find(
+                  (c) => c.id == ticketByNumber?.category?.id
+                )?.id,
+                sub_category_1: subCategory1Array.find(
+                  (item) => item.id == ticketByNumber?.subCategory1?.id
+                )?.id,
+                sub_category_2: subCategory2Array.find(
+                  (item) => item.id == ticketByNumber?.subCategory2?.id
+                )?.id,
                 incomingAt: dayjs(ticketByNumber?.incomingAt),
                 dueAt: dayjs(ticketByNumber?.dueAt),
                 patient_id: ticketByNumber.patientId,
@@ -806,59 +841,71 @@ export function EditInfoDetail({
                     />
                   </Form.Item>
                 </Col> */}
-                <Col span={24} style={{display: 'flex'}}>
-                <Col span={6}>
-                  <Form.Item
-                    label="Business Unit"
-                    name="businessUnit"
-                    rules={[
-                      { required: true, message: "Please Select Business Unit" },
-                    ]}
-                  >
-                    <Select
-                      showSearch
-                      filterOption={(input, option) => {
-                        return (
-                          option.label
-                            .toLowerCase()
-                            .indexOf(input.toLowerCase()) >= 0
-                        );
-                      }}
-                      options={
-                        !isEmpty(getBusiness.data)
-                    ? convertOptions(getBusiness.data, "name", "name")
-                    : []
-                      }
-                      placeholder={"Select Busines Unit"}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={6}>
-                  <Form.Item
-                    label="Clinic Location"
-                    name="clinicName"
-                    rules={[
-                      { required: false, message: "Please Select Clinic Location" },
-                    ]}
-                  >
-                    <Select
-                      showSearch
-                      filterOption={(input, option) => {
-                        return (
-                          option.label
-                            .toLowerCase()
-                            .indexOf(input.toLowerCase()) >= 0
-                        );
-                      }}
-                      options={
-                        !isEmpty(getClinicLocation.data)
-                        ? convertOptions(getClinicLocation.data.currentElements, "clinicName", "clinicName")
-                        : []
-                      }
-                      placeholder={"Select Clinic Location"}
-                    />
-                  </Form.Item>
-                </Col>
+                <Col span={24} style={{ display: "flex" }}>
+                  <Col span={6}>
+                    <Form.Item
+                      label="Business Unit"
+                      name="businessUnit"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please Select Business Unit",
+                        },
+                      ]}
+                    >
+                      <Select
+                        className="mb-10"
+                        showSearch
+                        filterOption={(input, option) => {
+                          return (
+                            option.label
+                              .toLowerCase()
+                              .indexOf(input.toLowerCase()) >= 0
+                          );
+                        }}
+                        options={
+                          !isEmpty(getBusiness.data)
+                            ? convertOptions(getBusiness.data, "name", "name")
+                            : []
+                        }
+                        placeholder={"Select Business Unit"}
+                        onChange={handleBusinessUnitChange}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={6}>
+                    <Form.Item
+                      label="Clinic Location"
+                      name="clinicName"
+                      rules={[
+                        {
+                          required: false,
+                          message: "Please Select Clinic Location",
+                        },
+                      ]}
+                    >
+                      <Select
+                        showSearch
+                        filterOption={(input, option) => {
+                          return (
+                            option.label
+                              .toLowerCase()
+                              .indexOf(input.toLowerCase()) >= 0
+                          );
+                        }}
+                        options={
+                          !isEmpty(getClinicLocation.data)
+                            ? convertOptions(
+                                getClinicLocation.data.currentElements,
+                                "clinicName",
+                                "clinicName"
+                              )
+                            : []
+                        }
+                        placeholder={"Select Clinic Location"}
+                      />
+                    </Form.Item>
+                  </Col>
                 </Col>
                 <Col span={6}>
                   <Form.Item
@@ -869,6 +916,7 @@ export function EditInfoDetail({
                     ]}
                   >
                     <Select
+                      className="mb-10"
                       showSearch
                       filterOption={(input, option) => {
                         return (
@@ -878,11 +926,16 @@ export function EditInfoDetail({
                         );
                       }}
                       options={
-                        !isEmpty(categoryList)
-                          ? convertOptions(categoryList, "name", "id")
+                        !isEmpty(categoryByBusiness?.data)
+                          ? CATEGORY_OPTIONS
                           : []
                       }
                       placeholder={"Select Category"}
+                      onChange={handleCategory}
+                      disabled={
+                        categoryByBusiness.status === "LOADING" ||
+                        form.getFieldValue("businessUnit") === ""
+                      }
                     />
                   </Form.Item>
                 </Col>
@@ -898,6 +951,7 @@ export function EditInfoDetail({
                     ]}
                   >
                     <Select
+                      className="mb-10"
                       showSearch
                       filterOption={(input, option) => {
                         return (
@@ -906,13 +960,14 @@ export function EditInfoDetail({
                             .indexOf(input.toLowerCase()) >= 0
                         );
                       }}
-                      disabled={
-                        isCategorySelected || !isEmpty(ticketByNumber.category)
-                          ? false
-                          : true
+                      disabled={isCategorySelected ? false : true}
+                      options={
+                        !isEmpty(subCategory1Array)
+                          ? SUB_CATEGORY_1_OPTIONS
+                          : []
                       }
-                      options={subCategory1Options}
                       placeholder={"Select Sub Category 1"}
+                      onChange={handleSubCat1}
                     />
                   </Form.Item>
                 </Col>
@@ -928,6 +983,7 @@ export function EditInfoDetail({
                     ]}
                   >
                     <Select
+                      className="mb-10"
                       showSearch
                       filterOption={(input, option) => {
                         return (
@@ -936,15 +992,14 @@ export function EditInfoDetail({
                             .indexOf(input.toLowerCase()) >= 0
                         );
                       }}
-                      disabled={
-                        isSubCategory1Selected ||
-                        !isEmpty(ticketByNumber.subCategory1)
-                          ? false
-                          : true
+                      disabled={isSubCategory1Selected ? false : true}
+                      options={
+                        !isEmpty(subCategory2Array)
+                          ? SUB_CATEGORY_2_OPTIONS
+                          : []
                       }
-                      options={subCategory2Options}
                       placeholder={"Select Sub Category 2"}
-                      onChange={populateAndValidateRahang}
+                      onChange={handleRahang}
                     />
                   </Form.Item>
                 </Col>
@@ -1301,8 +1356,8 @@ const mapStateToProps = ({
 });
 
 export default connect(mapStateToProps, {
+  getCategoryByBusiness,
   getTicketByNumber,
   getTeamList,
   getUserById,
-  getCategoryList,
 })(EditInfoDetail);

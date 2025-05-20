@@ -39,6 +39,7 @@ import Filter from "./Filter";
 
 export function CategoriesList({ getCategoryList }) {
   const [form] = Form.useForm();
+  const [formEdit] = Form.useForm();
   const [api, contextHolder] = notification.useNotification();
   const { getTicketCategoriesList, ticketCategories, resetStatus } =
     useTicketCategories();
@@ -280,60 +281,52 @@ export function CategoriesList({ getCategoryList }) {
     const level = row.subsubcategory_id ? 2 : row.subcategory_id ? 1 : 0;
     setCategoryLevel(level);
 
-    form.setFieldValue("category_id", row.category_id);
-    form.setFieldValue("category_name", row.category_name);
-    form.setFieldValue("subcategory_id", row.subcategory_id);
-    form.setFieldValue("subcategory_name", row.subcategory_name);
-    form.setFieldValue("subsubcategory_id", row.subsubcategory_id);
-    form.setFieldValue("subsubcategory_name", row.subsubcategory_name);
+    formEdit.setFieldValue("category_id", row.category_id);
+    formEdit.setFieldValue("category_name", row.category_name);
+    formEdit.setFieldValue("subcategory_id", row.subcategory_id);
+    formEdit.setFieldValue("subcategory_name", row.subcategory_name);
+    formEdit.setFieldValue("subsubcategory_id", row.subsubcategory_id);
+    formEdit.setFieldValue("subsubcategory_name", row.subsubcategory_name);
   };
 
-  // Set form field value to form instance on field change
-  const handleOnValuesChange = (changedValues) => {
-    const fieldName = Object.keys(changedValues)[0];
-    const value = changedValues[fieldName];
-
-    form.setFieldValue(fieldName, value);
-  };
-
-  const handleOk = async (values) => {
+  const handleSubmit = async () => {
     setIsLoading(true);
 
+    const payload = [];
+    if (formEdit.getFieldValue("category_id")) {
+      payload.push({
+        id: formEdit.getFieldValue("category_id"),
+        name: formEdit.getFieldValue("category_name"),
+      });
+    }
+    if (formEdit.getFieldValue("subcategory_id")) {
+      payload.push({
+        id: formEdit.getFieldValue("subcategory_id"),
+        name: formEdit.getFieldValue("subcategory_name"),
+      });
+    }
+    if (formEdit.getFieldValue("subsubcategory_id")) {
+      payload.push({
+        id: formEdit.getFieldValue("subsubcategory_id"),
+        name: formEdit.getFieldValue("subsubcategory_name"),
+      });
+    }
+
     try {
-      // Construct your payload based on the form values
-      const payload = {
-        // Determine which ID to use based on the data
-        id:
-          form.getFieldValue("subsubcategory_id") ||
-          form.getFieldValue("subcategory_id") ||
-          form.getFieldValue("category_id"),
-        name:
-          values.subsubcategory_name ||
-          values.subcategory_name ||
-          values.category_name,
-        // Add any other needed fields
-      };
-
-      console.log("Edit payload:", payload);
-
-      // console.log("Submitting edit with payload:", payload);
-
-      // const response = await ticketCategoryApi.editCategory(payload);
-
-      // if (response.status === 200) {
-      //   message.success("The category has been successfully updated");
-      //   handleOnEditClose();
-      //   // Refresh the data
-      //   getTicketCategoriesList({
-      //     keyword: state.search,
-      //     page: state.currentPage,
-      //     size: state.perPage,
-      //     ...activeFilter,
-      //     sort: sortTable.by ? `${sortTable.by},${sortTable.direction}` : "",
-      //   });
-      // } else {
-      //   message.error("Update failed");
-      // }
+      const response = await ticketCategoryApi.editCategory(payload);
+      if (response.status === 200) {
+        message.success("The category has been successfully updated");
+        handleOnEditClose();
+        getTicketCategoriesList({
+          keyword: state.search,
+          page: state.currentPage,
+          size: state.perPage,
+          ...activeFilter,
+          sort: sortTable.by ? `${sortTable.by},${sortTable.direction}` : "",
+        });
+      } else {
+        message.error("Update failed");
+      }
     } catch (error) {
       console.error("Edit category error:", error);
       message.error(
@@ -759,39 +752,31 @@ export function CategoriesList({ getCategoryList }) {
           </Button>,
           <Button
             size="large"
-            key="submit"
-            htmlType="submit"
+            key="button"
+            htmlType="button"
             type="primary"
             form="edit-categories-form"
             loading={isLoading}
+            onClick={handleSubmit}
           >
             Submit
           </Button>,
         ]}
       >
-        <Form
-          onFinish={() => form.submit()}
-          onValuesChange={handleOnValuesChange}
-          form={form}
-          id="edit-categories-form"
-        >
+        <Form form={formEdit} id="edit-categories-form">
           <Row gutter={5}>
-            <Col xs={20}>
-              <Form.Item
-                label={
-                  categoryLevel == 0
-                    ? "Category Name"
-                    : categoryLevel == 1
-                      ? "Sub Category 1 Name"
-                      : "Sub Category 2 Name"
-                }
-                name="category_name"
-                validateTrigger="onBlur"
-              >
-                <Input size="large" />
-              </Form.Item>
-            </Col>
-            {form.getFieldValue("subcategory_id") && (
+            {formEdit.getFieldValue("category_id") && (
+              <Col xs={20}>
+                <Form.Item
+                  label="Category"
+                  name="category_name"
+                  validateTrigger="onBlur"
+                >
+                  <Input size="large" />
+                </Form.Item>
+              </Col>
+            )}
+            {formEdit.getFieldValue("subcategory_id") && (
               <Col xs={20}>
                 <Form.Item
                   label="Sub Category 1"
@@ -802,7 +787,7 @@ export function CategoriesList({ getCategoryList }) {
                 </Form.Item>
               </Col>
             )}
-            {form.getFieldValue("subsubcategory_id") && (
+            {formEdit.getFieldValue("subsubcategory_id") && (
               <Col xs={20}>
                 <Form.Item
                   label="Sub Category 2"

@@ -10,7 +10,7 @@ import {
   GET_CATEGORY_BY_BUSINESS_STATUS_FAILED,
   RESET_CATEGORY_BY_BUSINESS_STATUS,
   GET_CATEGORY_LIST,
-} from "../../type";
+} from "../../type";
 
 import { queryStringify, removeEmptyAttributes } from "utils/index";
 
@@ -60,10 +60,8 @@ export const getCategoryByBusiness = (params) => async (dispatch) => {
 
   try {
     const { data } = await CategoryApi.getCategoryByBusiness(
-        queryStringify(removeEmptyAttributes(params))
+      queryStringify(removeEmptyAttributes(params))
     );
-
-    console.log(data, "data");
 
     dispatch({ type: GET_CATEGORY_BY_BUSINESS_STATUS_SUCCESS, payload: data });
   } catch (error) {
@@ -75,6 +73,6 @@ export const getCategoryByBusiness = (params) => async (dispatch) => {
       },
     });
   } finally {
-    dispatch({ type: RESET_CATEGORY_BY_BUSINESS_STATUS});
+    dispatch({ type: RESET_CATEGORY_BY_BUSINESS_STATUS });
   }
 };
