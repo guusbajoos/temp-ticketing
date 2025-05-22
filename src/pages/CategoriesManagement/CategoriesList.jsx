@@ -77,8 +77,8 @@ export function CategoriesList({ getCategoryList }) {
   const [activeFilter, setActiveFilter] = useState({
     businessUnit: null,
     category: null,
-    subCategory1: null,
-    subCategory2: null,
+    sub_category_1: null,
+    sub_category_2: null,
   });
   const [sortTable, setSortTable] = useState({
     by: "",
@@ -127,29 +127,28 @@ export function CategoriesList({ getCategoryList }) {
     const payload = formValues.name.map((item) => {
       if (formValues.level == 0) {
         return {
-          name: item,
+          name: item.name,
           level: formValues.level,
           businessUnit: formValues.businessUnit,
           parent: null,
         };
       } else if (formValues.level == 1) {
         return {
-          name: item,
+          name: item.name,
           level: formValues.level,
           businessUnit: formValues.businessUnit,
           parent: categoriesIds.category,
         };
       } else {
         return {
-          name: item,
+          name: item.name,
           level: formValues.level,
           businessUnit: formValues.businessUnit,
           parent: categoriesIds.subCategory1,
-          jawsMandatory: jawsValidation,
+          jawsMandatory: item.jawsMandatory,
         };
       }
     });
-
     try {
       const response = await ticketCategoryApi.addCategory(payload);
       if (response.status == 201) {
@@ -163,6 +162,12 @@ export function CategoriesList({ getCategoryList }) {
       message.error(errMessage);
     } finally {
       setIsLoading(false);
+      setState({
+        keyword: "",
+        search: "",
+        currentPage: 1,
+        perPage: 10,
+      });
     }
   };
 
@@ -395,6 +400,8 @@ export function CategoriesList({ getCategoryList }) {
       ),
     },
   ];
+
+  console.log(formValues, "formValues");
 
   return (
     <>
@@ -693,9 +700,14 @@ export function CategoriesList({ getCategoryList }) {
                 onClick={() => {
                   setFormValues((x) => ({
                     ...x,
-                    name: [...x.name, currentName],
+                    name: [
+                      ...(x.name || []),
+                      { name: currentName, jawsMandatory: jawsValidation },
+                    ],
+                    // jawsMandatory: jawsValidation,
                   }));
                   form.setFieldValue("currentName", "");
+                  setJawsValidation(false);
                   setCurrentName("");
                 }}
               >
@@ -705,15 +717,15 @@ export function CategoriesList({ getCategoryList }) {
           </Row>
           <Row gutter={10}>
             {formValues.name.map((item, index) => (
-              <Tag key={index}>{item}</Tag>
+              <Tag key={index}>{item?.name}</Tag>
             ))}
           </Row>
           <Row gutter={10}>
             {formValues.level === 2 && (
               <Col xs={20}>
                 <Checkbox
-                  value={jawsValidation}
-                  onClick={() => setJawsValidation(!jawsValidation)}
+                  checked={jawsValidation}
+                  onChange={(e) => setJawsValidation(e.target.checked)}
                 >
                   Add Rahang Information
                 </Checkbox>
@@ -730,6 +742,14 @@ export function CategoriesList({ getCategoryList }) {
         title="Delete Confirmation"
         onCancel={() => handleOnDeleteClose()}
         onOk={() => handleOnDeleteConfirm()}
+        cancelButtonProps={{
+          disabled: isLoading,
+          loading: isLoading,
+        }}
+        okButtonProps={{
+          disabled: isLoading,
+          loading: isLoading,
+        }}
       >
         <h3>
           Are you sure you want to delete this category : {categoryName}?{" "}
@@ -801,7 +821,18 @@ export function CategoriesList({ getCategoryList }) {
           </Row>
         </Form>
       </Modal>
-      <Filter show={showFilter} setActiveFilter={(v) => setActiveFilter(v)} />
+      <Filter
+        show={showFilter}
+        setActiveFilter={(v) => setActiveFilter(v)}
+        onResetState={() => {
+          setState({
+            keyword: "",
+            search: "",
+            currentPage: 1,
+            perPage: 10,
+          });
+        }}
+      />
     </>
   );
 }

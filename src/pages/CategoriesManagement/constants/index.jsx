@@ -1,6 +1,6 @@
 import { wordsCapitalize } from "utils/index";
-import {Button, Tooltip} from "antd";
-import {DeleteOutlined, SelectOutlined} from "@ant-design/icons";
+import { Button, Tooltip } from "antd";
+import { DeleteOutlined, SelectOutlined } from "@ant-design/icons";
 import React from "react";
 
 export const columnsTicketCategories = [
@@ -8,7 +8,8 @@ export const columnsTicketCategories = [
     title: "Business Unit",
     dataIndex: "business_unit",
     render: (v) => wordsCapitalize(v) || "-",
-  },{
+  },
+  {
     title: "Category Name",
     dataIndex: "category_name",
     render: (v) => wordsCapitalize(v) || "-",
@@ -22,24 +23,22 @@ export const columnsTicketCategories = [
     title: "Sub Category 2",
     dataIndex: "subsubcategory_name",
     render: (v) => wordsCapitalize(v) || "-",
-  },{
+  },
+  {
     title: "Created Date",
     dataIndex: "created_date",
     render: (v) => wordsCapitalize(v) || "-",
   },
   {
-    title: 'Action',
+    title: "Action",
     render: (row) => (
-        <Tooltip title="Open in New Tab">
-          <Button
-              onClick={``}
-              rel="noopener noreferrer"
-              target="_blank">
-            <DeleteOutlined/>
-          </Button>
-        </Tooltip>
+      <Tooltip title="Open in New Tab">
+        <Button onClick={``} rel="noopener noreferrer" target="_blank">
+          <DeleteOutlined />
+        </Button>
+      </Tooltip>
     ),
-  }
+  },
 ];
 
 export const radioChoice = [

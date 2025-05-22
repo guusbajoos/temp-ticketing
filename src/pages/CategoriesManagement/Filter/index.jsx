@@ -26,6 +26,7 @@ export const Filter = ({
   categoryList,
   show,
   setActiveFilter,
+  onResetState,
 }) => {
   const [isCategorySelected, setIsCategorySelected] = useState(false);
   const [isSubCategory1Selected, setIsSubCategory1Selected] = useState(false);
@@ -45,6 +46,15 @@ export const Filter = ({
   );
 
   const handleBusinessUnitChange = async (value) => {
+    onResetState();
+
+    setActiveFilter({
+      businessUnit: value,
+      category: null,
+      sub_category_1: null,
+      sub_category_2: null,
+    });
+
     await getCategoryByBusiness({ unit: value });
     form.setFieldsValue({
       category: undefined,
@@ -56,6 +66,15 @@ export const Filter = ({
   };
 
   const handleCategory = (val) => {
+    onResetState();
+
+    setActiveFilter((prev) => ({
+      ...prev,
+      category: val,
+      sub_category_1: null,
+      sub_category_2: null,
+    }));
+
     const find = categoryList.find((item) => item.id === Number(val));
     setCategory(find.id);
     setIsCategorySelected(true);
@@ -67,12 +86,21 @@ export const Filter = ({
   };
 
   const handleSubCat1 = (val) => {
+    onResetState();
+
+    setActiveFilter((prev) => ({
+      ...prev,
+      sub_category_1: val,
+      sub_category_2: null,
+    }));
+
     const find = subCategory1Array.find((item) => item.id === Number(val));
 
     setSubCategory1(find.id);
   };
 
   const handleRahang = async (subCategory2) => {
+    onResetState();
     setIsRahangSetActive(false);
 
     const { data } = await JawsApi.validation(
@@ -177,6 +205,7 @@ export const Filter = ({
               setCategory(false);
               setSubCategory1(false);
               setActiveFilter({});
+              onResetState();
               form.resetFields();
             }}
             type="link"

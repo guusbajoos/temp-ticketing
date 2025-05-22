@@ -359,6 +359,12 @@ export function EditInfoDetail({
     ) {
       const { category, subCategory1, subCategory2 } = ticketByNumber;
 
+      form.setFieldsValue({
+        category: category?.id,
+        sub_category_1: subCategory1?.id,
+        sub_category_2: subCategory2?.id,
+      });
+
       validateRahang(category.id, subCategory1.id, subCategory2.id);
       setIsCategorySelected(true);
       setIsSubCategory1Selected(true);
@@ -682,15 +688,6 @@ export function EditInfoDetail({
                 description: ticketByNumber.description,
                 source: ticketByNumber.source,
                 urgency: ticketByNumber.urgency,
-                category: categorySelectedArray?.find(
-                  (c) => c.id == ticketByNumber?.category?.id
-                )?.id,
-                sub_category_1: subCategory1Array.find(
-                  (item) => item.id == ticketByNumber?.subCategory1?.id
-                )?.id,
-                sub_category_2: subCategory2Array.find(
-                  (item) => item.id == ticketByNumber?.subCategory2?.id
-                )?.id,
                 incomingAt: dayjs(ticketByNumber?.incomingAt),
                 dueAt: dayjs(ticketByNumber?.dueAt),
                 patient_id: ticketByNumber.patientId,
