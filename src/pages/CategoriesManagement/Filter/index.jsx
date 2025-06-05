@@ -184,6 +184,8 @@ export const Filter = ({
     }
   }, [getBusiness.status]);
 
+  console.log(form.getFieldValue("businessUnit"), "a");
+
   return (
     <div
       className="filter"
@@ -258,7 +260,7 @@ export const Filter = ({
                 onChange={handleCategory}
                 disabled={
                   categoryByBusiness.status === "LOADING" ||
-                  form.getFieldValue("businessUnit") === ""
+                  !form.getFieldValue("businessUnit")
                 }
               />
             </Form.Item>

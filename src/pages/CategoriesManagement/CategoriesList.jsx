@@ -401,8 +401,6 @@ export function CategoriesList({ getCategoryList }) {
     },
   ];
 
-  console.log(formValues, "formValues");
-
   return (
     <>
       {contextHolder}
