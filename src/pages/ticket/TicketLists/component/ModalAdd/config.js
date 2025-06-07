@@ -20,7 +20,7 @@ export const config = {
     "cut",
     "selectall",
   ],
-  disablePlugins: ["paste", "stat", "video"],
+  disablePlugins: ["stat", "video"],
   textIcons: false,
   uploader: {
     url: `${import.meta.env.VITE_APP_API_URL}/api/objects`,
@@ -47,13 +47,22 @@ export const config = {
       };
     },
     defaultHandlerSuccess: function (data) {
-      const field = "files";
-      if (data[field] && data[field].length) {
-        const jodit = this?.s?.jodit;
-        const image = jodit.createInside.element("img");
-        image.src = data.baseurl;
-        image.style.width = "100%";
-        this?.s?.insertImage(image);
+      const url = data.baseurl || data.url;
+      if (url) {
+        const imgHtml = `<img src="${url}" style="width:100%" />`;
+        if (this.selection && typeof this.selection.insertNode === "function") {
+          const imageNode = this.ownerDocument.createElement("img");
+          imageNode.src = url;
+          imageNode.style.width = "100%";
+          this.selection.insertNode(imageNode);
+        } else if (
+          this.jodit &&
+          typeof this.jodit.selection?.insertHTML === "function"
+        ) {
+          this.jodit.selection.insertHTML(imgHtml);
+        } else if (this.jodit && typeof this.jodit.value === "string") {
+          this.jodit.value += imgHtml;
+        }
       }
     },
     error: function (e) {

@@ -20,7 +20,7 @@ export const config = {
     "cut",
     "selectall",
   ],
-  disablePlugins: ["paste", "stat", "video"],
+  disablePlugins: ["stat", "video"],
   textIcons: false,
   uploader: {
     url: `${import.meta.env.VITE_APP_API_URL}/api/objects`,
@@ -37,28 +37,8 @@ export const config = {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     },
-    prepareData: (formData) => {
-      // Cek ukuran file
-      if (
-        formData.get("files") &&
-        formData.get("files").size > 5 * 1024 * 1024
-      ) {
-        alert("File size exceeds the maximum limit (5MB).");
-        return false;
-      }
-
-      formData.append("object_purpose", `image_comment-${Date.now()}`);
-      formData.append("object_file", formData.get("files"));
-      formData.delete("path");
-      formData.delete("source");
-      formData.delete("files");
-      return formData;
-    },
     isSuccess: function (resp) {
       return !resp.error;
-    },
-    getMessage: function (resp) {
-      return resp.msg;
     },
     process: function (resp) {
       return {
@@ -67,19 +47,29 @@ export const config = {
       };
     },
     defaultHandlerSuccess: function (data) {
-      const field = "files";
-      if (data[field] && data[field].length) {
-        const jodit = this?.s?.jodit;
-        const image = jodit.createInside.element("img");
-        image.src = data.baseurl;
-        image.style.width = "100%";
-        this?.s?.insertImage(image);
+      const url = data.baseurl || data.url;
+      if (url) {
+        const imgHtml = `<img src="${url}" style="width:100%" />`;
+        if (this.selection && typeof this.selection.insertNode === "function") {
+          const imageNode = this.ownerDocument.createElement("img");
+          imageNode.src = url;
+          imageNode.style.width = "100%";
+          this.selection.insertNode(imageNode);
+        } else if (
+          this.jodit &&
+          typeof this.jodit.selection?.insertHTML === "function"
+        ) {
+          this.jodit.selection.insertHTML(imgHtml);
+        } else if (this.jodit && typeof this.jodit.value === "string") {
+          this.jodit.value += imgHtml;
+        }
       }
     },
     error: function (e) {
       this?.message?.message(e.getMessage(), "error", 4000);
     },
   },
-  placeholder: "Insert Comment...",
+  placeholder:
+    "Insert description, image maximum size is 5 mb and maximum resolution is 2048x1084...",
   showXPathInStatusbar: false,
 };
