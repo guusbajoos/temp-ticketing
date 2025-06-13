@@ -137,7 +137,7 @@ export function CategoriesList({ getCategoryList }) {
           name: item.name,
           level: formValues.level,
           businessUnit: formValues.businessUnit,
-          parent: categoriesIds.category,
+          parent: form.category,
         };
       } else {
         return {
@@ -149,6 +149,7 @@ export function CategoriesList({ getCategoryList }) {
         };
       }
     });
+
     try {
       const response = await ticketCategoryApi.addCategory(payload);
       if (response.status == 201) {
@@ -177,9 +178,12 @@ export function CategoriesList({ getCategoryList }) {
       name: [],
       parent: null,
     });
+    form.setFieldValue("businessUnit", undefined);
+    form.setFieldValue("category", undefined);
+    form.setFieldValue("sub_category1", undefined);
     setCategoriesIds({
-      category: null,
-      subCategory1: null,
+      category: undefined,
+      subCategory1: undefined,
     });
   };
 
